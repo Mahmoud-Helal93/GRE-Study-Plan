@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* ── Font & Full-Screen Shell ──────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    background-color: #f7f8fb;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1;
+    line-height: 1.5;
+  }
+
+  /* Tighter tracking on headings */
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Tabular numbers wherever explicitly requested */
+  .tabular-nums {
+    font-feature-settings: "tnum" 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Better button/input baseline */
+  button,
+  input,
+  select,
+  textarea {
+    font-family: inherit;
+    font-size: inherit;
+  }
+
+  /* Thin, subtle scrollbars on webkit */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.22);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.4);
+  }
+
+  /* Sidebar dark scrollbar */
+  aside ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.07);
+  }
+  aside ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid #7c3aed;
+    outline-offset: 2px;
+  }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────── */
+@layer utilities {
+  .break-words {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .label-micro {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #64748b;
+  }
+
+  /* Prevent layout shift on hover */
+  .hover-lift {
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+  }
+}
