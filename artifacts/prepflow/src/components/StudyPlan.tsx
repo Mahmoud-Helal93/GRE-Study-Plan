@@ -233,7 +233,6 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
 interface DayRowProps {
   block: PlanBlock;
   isExpanded: boolean;
-  isFirst: boolean;
   completedIds: Set<string>;
   onToggle: (id: string) => void;
   onToggleTask: (taskId: string) => void;
@@ -243,7 +242,7 @@ interface DayRowProps {
 }
 
 function DayRow({
-  block, isExpanded, isFirst, completedIds,
+  block, isExpanded, completedIds,
   onToggle, onToggleTask, onBulkToggle, onNavigateTo, activeFilter,
 }: DayRowProps) {
   const required = useMemo(
@@ -254,9 +253,9 @@ function DayRow({
   const allDone = required.length > 0 && done === required.length;
 
   return (
-    <div className={!isFirst ? "border-t border-[#b5d4ea]" : ""}>
+    <div className="rounded-[4px] overflow-hidden">
       {/* Accordion header */}
-      <div className="flex items-center bg-[#c7e0f1] px-4 py-[10px] gap-3">
+      <div className="flex items-center bg-[#c7e0f1] px-4 py-[11px] gap-3">
         <button
           className="flex-1 text-left focus:outline-none min-w-0"
           onClick={() => onToggle(block.id)}
@@ -563,13 +562,12 @@ export default function StudyPlan() {
                     No content for this week.
                   </div>
                 ) : (
-                  <div className="border border-[#b5d4ea] rounded-[6px] overflow-hidden">
-                    {currentBlocks.map((block, i) => (
+                  <div className="flex flex-col gap-[3px]">
+                    {currentBlocks.map((block) => (
                       <DayRow
                         key={block.id}
                         block={block}
                         isExpanded={expandedBlockId === block.id}
-                        isFirst={i === 0}
                         completedIds={completedIds}
                         onToggle={toggleExpand}
                         onToggleTask={handleToggleTask}
