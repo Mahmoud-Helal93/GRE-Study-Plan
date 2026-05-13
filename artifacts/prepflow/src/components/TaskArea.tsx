@@ -552,7 +552,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#eaf5fc]">
       {/* Left — Things to Watch */}
-      <div className="py-7 pl-9 pr-9 lg:pr-7 leading-[1.8]">
+      <div className="p-6 lg:pr-8">
         <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Watch</h3>
         {watchGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
@@ -576,7 +576,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
       </div>
 
       {/* Right — Things to Do */}
-      <div className="py-7 pr-9 pl-9 lg:pl-7 leading-[1.8]">
+      <div className="p-6 lg:pl-8">
         <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Do</h3>
         {doGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No action tasks for this filter.</p>
@@ -886,7 +886,7 @@ export default function TaskArea({
               <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
             </div>
           ) : (
-            <div className="px-9 py-7 leading-[1.8]">
+            <div className="px-6 py-5">
               {visibleSections.map(({ section, visibleTasks, sIdx }, i) => (
                 <SectionGroup
                   key={sIdx}
@@ -982,7 +982,7 @@ export default function TaskArea({
               <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
             </div>
           ) : (
-            <div className="px-9 py-7 leading-[1.8]">
+            <div className="px-5 py-5">
               {visibleSections.map(({ section, visibleTasks, sIdx }, i) => (
                 <SectionGroup
                   key={sIdx}
