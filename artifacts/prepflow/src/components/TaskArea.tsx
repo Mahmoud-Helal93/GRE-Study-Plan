@@ -1,61 +1,30 @@
 import { useState } from "react";
 import { PlanBlock, PlanTask, PlanSection } from "../data/prepFlowPlan";
-import { getCategoryColor } from "../data/categoryColors";
 import { type TaskFilter } from "../lib/filters";
 
-/* ── Badge detection ───────────────────────────────────────── */
-interface Badge {
-  label: string;
-  className: string;
-}
-
-const TYPE_BADGE: Record<string, Badge> = {
-  video:    { label: "VIDEO",    className: "bg-rose-50    text-rose-600    border-rose-100" },
-  practice: { label: "PRACTICE", className: "bg-orange-50  text-orange-600  border-orange-100" },
-  review:   { label: "REVIEW",   className: "bg-sky-50     text-sky-600     border-sky-100" },
-  quiz:     { label: "QUIZ",     className: "bg-purple-50  text-purple-600  border-purple-100" },
-  reading:  { label: "READING",  className: "bg-teal-50    text-teal-600    border-teal-100" },
-  writing:  { label: "WRITING",  className: "bg-amber-50   text-amber-600   border-amber-100" },
-  test:     { label: "TEST",     className: "bg-violet-50  text-violet-700  border-violet-100" },
-  setup:    { label: "SETUP",    className: "bg-slate-50   text-slate-500   border-slate-100" },
-};
-
-function getBadge(task: PlanTask): Badge | null {
-  const t = task.title.toLowerCase();
-  if (t.startsWith("watch"))                          return TYPE_BADGE.video;
-  if (t.includes("quiz"))                             return TYPE_BADGE.quiz;
-  if (t.includes("review") || t.includes("revise"))  return TYPE_BADGE.review;
-  if (t.includes("practice"))                         return TYPE_BADGE.practice;
-  return TYPE_BADGE[task.type] ?? null;
-}
-
 /* ── Checkbox ──────────────────────────────────────────────── */
-function Checkbox({ checked, onToggle }: { checked: boolean; onToggle: () => void }) {
+function AcademicCheckbox({ checked, onToggle }: { checked: boolean; onToggle: () => void }) {
   return (
     <button
       onClick={onToggle}
-      className="shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+      className="shrink-0 mt-[3px] w-[15px] h-[15px] flex items-center justify-center transition-colors border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2f6bff]"
+      style={{
+        borderRadius: 2,
+        background: checked ? "#2f6bff" : "white",
+        borderColor: checked ? "#2f6bff" : "#94a3b8",
+      }}
       aria-label={checked ? "Mark incomplete" : "Mark complete"}
     >
-      <div
-        className={`flex items-center justify-center transition-all duration-150 ${
-          checked
-            ? "bg-violet-600"
-            : "bg-white border-2 border-gray-300 hover:border-violet-400"
-        }`}
-        style={{ width: 20, height: 20, borderRadius: 6 }}
-      >
-        {checked && (
-          <svg className="w-3 h-3 text-white" viewBox="0 0 10 10" fill="none">
-            <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        )}
-      </div>
+      {checked && (
+        <svg className="w-[9px] h-[9px] text-white" viewBox="0 0 9 9" fill="none">
+          <path d="M1.5 4.5L3.5 6.5L7.5 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
     </button>
   );
 }
 
-/* ── TaskRow ───────────────────────────────────────────────── */
+/* ── TaskRow — academic clean list item ─────────────────────── */
 interface TaskRowProps {
   task: PlanTask;
   completed: boolean;
@@ -63,77 +32,70 @@ interface TaskRowProps {
 }
 
 function TaskRow({ task, completed, onToggle }: TaskRowProps) {
-  const badge = getBadge(task);
   const hasLinks = task.links && task.links.length > 0;
+  const singleLinkIsTitle =
+    hasLinks && task.links!.length === 1 && task.links![0].text === task.title;
 
   return (
-    <div
-      className={`flex items-start gap-3 rounded-xl px-4 py-3 border transition-all duration-150 ${
-        completed
-          ? "bg-slate-50/80 border-gray-100"
-          : "bg-white border-gray-100 hover:border-violet-200 hover:shadow-[0_1px_6px_0_rgba(109,40,217,0.07)]"
-      }`}
-    >
-      <div className="mt-[2px]">
-        <Checkbox checked={completed} onToggle={() => onToggle(task.id)} />
-      </div>
+    <div className="flex items-start gap-2.5 py-1.5">
+      <AcademicCheckbox checked={completed} onToggle={() => onToggle(task.id)} />
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <button
-            onClick={() => onToggle(task.id)}
-            className="flex-1 min-w-0 text-left focus:outline-none"
-          >
-            <span
-              className={`text-[15px] leading-relaxed break-words font-medium block ${
-                completed ? "line-through text-slate-400" : "text-slate-700"
+        {singleLinkIsTitle ? (
+          <>
+            <a
+              href={task.links![0].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className={`text-[15px] leading-[1.8] break-words ${
+                completed ? "line-through text-[#94a3b8]" : "text-[#1a6edf] hover:underline"
               }`}
             >
               {task.title}
-            </span>
-          </button>
-
-          {badge && (
-            <span
-              className={`shrink-0 mt-1 inline-flex items-center text-[10px] font-bold uppercase tracking-wider border rounded-md px-1.5 py-0.5 ${badge.className}`}
-            >
-              {badge.label}
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-          {task.optional && (
-            <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50 border border-slate-100 rounded-md px-1.5 py-0.5">
-              Optional
-            </span>
-          )}
-          {hasLinks && task.links!.map((link, i) => {
-            const displayText = link.text || "Open Resource";
-            return (
-              <a
-                key={i}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 border border-violet-100 hover:border-violet-200 rounded-lg px-2 py-1 transition-all duration-100 no-underline"
+            </a>
+            {task.optional && (
+              <span className="text-[#94a3b8] text-[13px] ml-1">(optional)</span>
+            )}
+          </>
+        ) : (
+          <>
+            <button onClick={() => onToggle(task.id)} className="w-full text-left focus:outline-none">
+              <span
+                className={`text-[15px] leading-[1.8] break-words ${
+                  completed ? "line-through text-[#94a3b8]" : "text-[#172033]"
+                }`}
               >
-                <svg className="w-3 h-3 shrink-0" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 2H2a1 1 0 00-1 1v7a1 1 0 001 1h7a1 1 0 001-1V7" />
-                  <path d="M8 1h3v3" /><path d="M11 1L5.5 6.5" />
-                </svg>
-                <span className="max-w-[200px] truncate">{displayText}</span>
-              </a>
-            );
-          })}
-        </div>
+                {task.title}
+                {task.optional && (
+                  <span className="text-[#94a3b8] text-[13px] ml-1.5">(optional)</span>
+                )}
+              </span>
+            </button>
+            {hasLinks && (
+              <div className="mt-0.5 flex flex-col gap-0.5">
+                {task.links!.map((link, i) => (
+                  <a
+                    key={i}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[15px] text-[#1a6edf] hover:underline leading-[1.8] break-words"
+                  >
+                    {link.text || link.url}
+                  </a>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-/* ── SectionGroup (used for setup/practice-test blocks) ─────── */
+/* ── SectionGroup — for setup/practice-test blocks ─────────── */
 interface SectionGroupProps {
   section: PlanSection;
   visibleTasks: PlanTask[];
@@ -143,44 +105,26 @@ interface SectionGroupProps {
 }
 
 function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst }: SectionGroupProps) {
-  const colors = getCategoryColor(section.category);
   const required = section.tasks.filter((t) => !t.optional);
   const done = required.filter((t) => completedIds.has(t.id)).length;
   const total = required.length;
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
   const isDone = total > 0 && done === total;
 
   if (visibleTasks.length === 0) return null;
 
   return (
-    <div className={!isFirst ? "border-t border-gray-100" : ""}>
-      <div className="flex items-center gap-2.5 px-5 py-3 bg-slate-50/70">
-        <span className="text-base leading-none">{section.icon}</span>
-        <span className={`text-xs font-bold uppercase tracking-[0.12em] px-2 py-1 rounded-md ${colors.bg} ${colors.text}`}>
-          {section.category}
-        </span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <span className={`text-xs font-semibold tabular-nums ${isDone ? "text-emerald-600" : "text-slate-400"}`}>
-            {done}/{total}
-          </span>
-          {isDone && (
-            <svg className="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 6l3 3 5-5" />
-            </svg>
-          )}
-        </div>
+    <div className={!isFirst ? "mt-7 pt-7 border-t border-[#e8f1f9]" : ""}>
+      <div className="flex items-center gap-2 mb-3">
+        {section.icon && <span className="text-[16px] leading-none">{section.icon}</span>}
+        <span className="text-[17px] font-bold text-[#172033]">{section.category}</span>
+        {isDone && (
+          <svg className="w-4 h-4 text-emerald-500 ml-1" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2.5 7l3 3 6-6" />
+          </svg>
+        )}
+        <span className="ml-auto text-[13px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
       </div>
-
-      {total > 0 && (
-        <div className="h-[2px] w-full bg-gray-100 overflow-hidden">
-          <div
-            className={`h-full transition-all duration-500 ${isDone ? "bg-emerald-500" : "bg-violet-500"}`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-      )}
-
-      <div className="px-4 py-3 flex flex-col gap-2">
+      <div className="flex flex-col">
         {visibleTasks.map((task) => (
           <TaskRow
             key={task.id}
@@ -194,7 +138,7 @@ function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst }
   );
 }
 
-/* ── Column category group (used inside the two-column layout) ── */
+/* ── ColumnCategory — used inside two-column layout ─────────── */
 interface ColumnCategoryProps {
   category: string;
   icon: string;
@@ -204,8 +148,7 @@ interface ColumnCategoryProps {
   isFirst: boolean;
 }
 
-function ColumnCategory({ category, icon, tasks, completedIds, onToggle, isFirst }: ColumnCategoryProps) {
-  const colors = getCategoryColor(category);
+function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst }: ColumnCategoryProps) {
   const required = tasks.filter((t) => !t.optional);
   const done = required.filter((t) => completedIds.has(t.id)).length;
   const total = required.length;
@@ -214,24 +157,19 @@ function ColumnCategory({ category, icon, tasks, completedIds, onToggle, isFirst
   if (tasks.length === 0) return null;
 
   return (
-    <div className={!isFirst ? "mt-5 pt-5 border-t border-gray-100" : ""}>
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-sm leading-none">{icon}</span>
-        <span className={`text-[11px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-md ${colors.bg} ${colors.text}`}>
+    <div className={!isFirst ? "mt-5 pt-5 border-t border-[#e8f1f9]" : ""}>
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-[13px] font-semibold text-[#475569] uppercase tracking-wider">
           {category}
         </span>
-        {total > 0 && (
-          <span className={`ml-auto text-[11px] font-semibold tabular-nums ${isDone ? "text-emerald-600" : "text-slate-400"}`}>
-            {done}/{total}
-          </span>
-        )}
         {isDone && (
-          <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 6l3 3 5-5" />
+          <svg className="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2.5 7l3 3 6-6" />
           </svg>
         )}
+        <span className="ml-auto text-[12px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
       </div>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col">
         {tasks.map((task) => (
           <TaskRow
             key={task.id}
@@ -245,111 +183,10 @@ function ColumnCategory({ category, icon, tasks, completedIds, onToggle, isFirst
   );
 }
 
-/* ── Two-column day layout ──────────────────────────────────── */
-interface TwoColumnLayoutProps {
-  block: PlanBlock;
-  completedIds: Set<string>;
-  onToggle: (id: string) => void;
-  activeFilter: TaskFilter;
-  hideCompleted: boolean;
-}
+/* ── Two-column layout types ────────────────────────────────── */
+type CategoryGroup = { category: string; icon: string; tasks: PlanTask[] };
 
-type CategoryGroup = {
-  category: string;
-  icon: string;
-  tasks: PlanTask[];
-};
-
-function TwoColumnLayout({ block, completedIds, onToggle, activeFilter, hideCompleted }: TwoColumnLayoutProps) {
-  const isCategoryFilter = !["All", "Optional", "Completed", "Incomplete"].includes(activeFilter);
-
-  function applyFilters(tasks: PlanTask[]): PlanTask[] {
-    let result = tasks;
-    if (isCategoryFilter) return [];
-    switch (activeFilter) {
-      case "Optional":   result = tasks.filter((t) => t.optional); break;
-      case "Completed":  result = tasks.filter((t) => completedIds.has(t.id)); break;
-      case "Incomplete": result = tasks.filter((t) => !completedIds.has(t.id)); break;
-    }
-    if (hideCompleted) result = result.filter((t) => !completedIds.has(t.id));
-    return result;
-  }
-
-  const watchMap = new Map<string, CategoryGroup>();
-  const doMap = new Map<string, CategoryGroup>();
-
-  for (const section of block.sections) {
-    const watchTasks: PlanTask[] = [];
-    const doTasks: PlanTask[] = [];
-
-    for (const task of section.tasks) {
-      if (task.type === "video") {
-        watchTasks.push(task);
-      } else {
-        doTasks.push(task);
-      }
-    }
-
-    if (watchTasks.length > 0) {
-      const key = section.category;
-      if (!watchMap.has(key)) {
-        watchMap.set(key, { category: section.category, icon: section.icon, tasks: [] });
-      }
-      watchMap.get(key)!.tasks.push(...watchTasks);
-    }
-
-    if (doTasks.length > 0) {
-      const key = section.category;
-      if (!doMap.has(key)) {
-        doMap.set(key, { category: section.category, icon: section.icon, tasks: [] });
-      }
-      doMap.get(key)!.tasks.push(...doTasks);
-    }
-  }
-
-  const watchGroups: CategoryGroup[] = [];
-  for (const group of watchMap.values()) {
-    const filtered = applyFilters(group.tasks);
-    if (filtered.length > 0) {
-      watchGroups.push({ ...group, tasks: filtered });
-    }
-  }
-
-  const doGroups: CategoryGroup[] = [];
-  for (const group of doMap.values()) {
-    const filtered = applyFilters(group.tasks);
-    if (filtered.length > 0) {
-      doGroups.push({ ...group, tasks: filtered });
-    }
-  }
-
-  const isCatFiltered = isCategoryFilter;
-
-  if (isCatFiltered) {
-    const catSections = block.sections.filter((s) => s.category === activeFilter);
-    if (catSections.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-14 text-center">
-          <p className="text-sm font-semibold text-slate-500">No tasks match "{activeFilter}"</p>
-          <p className="text-xs text-slate-400 mt-1">Try a different filter</p>
-        </div>
-      );
-    }
-    const filteredWatch: CategoryGroup[] = [];
-    const filteredDo: CategoryGroup[] = [];
-    for (const s of catSections) {
-      const watch = hideCompleted ? s.tasks.filter((t) => t.type === "video" && !completedIds.has(t.id)) : s.tasks.filter((t) => t.type === "video");
-      const doT = hideCompleted ? s.tasks.filter((t) => t.type !== "video" && !completedIds.has(t.id)) : s.tasks.filter((t) => t.type !== "video");
-      if (watch.length > 0) filteredWatch.push({ category: s.category, icon: s.icon, tasks: watch });
-      if (doT.length > 0) filteredDo.push({ category: s.category, icon: s.icon, tasks: doT });
-    }
-    return <ColumnsGrid watchGroups={filteredWatch} doGroups={filteredDo} completedIds={completedIds} onToggle={onToggle} />;
-  }
-
-  return <ColumnsGrid watchGroups={watchGroups} doGroups={doGroups} completedIds={completedIds} onToggle={onToggle} />;
-}
-
-/* ── Columns grid ─────────────────────────────────────────── */
+/* ── ColumnsGrid ────────────────────────────────────────────── */
 interface ColumnsGridProps {
   watchGroups: CategoryGroup[];
   doGroups: CategoryGroup[];
@@ -362,39 +199,20 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle }: ColumnsG
 
   if (isEmpty) {
     return (
-      <div className="flex flex-col items-center justify-center py-14 text-center px-6">
-        <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
-          <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 12l2 2 4-4" />
-            <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
-          </svg>
-        </div>
-        <p className="text-sm font-semibold text-slate-700">All tasks completed or hidden.</p>
-        <p className="text-xs text-slate-400 mt-1">
-          Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
-        </p>
+      <div className="flex flex-col items-center justify-center py-10 text-center px-6">
+        <p className="text-[15px] text-[#475569] font-medium">No tasks match the current filter.</p>
+        <p className="text-[13px] text-[#94a3b8] mt-1">Try selecting "All" to see everything.</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#e8f1f9]">
       {/* Left — Things to Watch */}
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-          <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="5,3 19,10 5,17" />
-            </svg>
-          </div>
-          <h3 className="text-base font-bold text-slate-800 tracking-tight">Things to Watch</h3>
-          <span className="ml-auto text-[11px] font-semibold text-rose-400 bg-rose-50 border border-rose-100 rounded-full px-2 py-0.5 tabular-nums">
-            {watchGroups.reduce((n, g) => n + g.tasks.length, 0)}
-          </span>
-        </div>
-
+      <div className="p-6 lg:pr-8">
+        <h3 className="text-[20px] font-bold text-[#172033] mb-5">Things to Watch</h3>
         {watchGroups.length === 0 ? (
-          <p className="text-sm text-slate-400 italic py-2">No watch tasks for this filter.</p>
+          <p className="text-[14px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
         ) : (
           watchGroups.map((group, i) => (
             <ColumnCategory
@@ -411,21 +229,10 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle }: ColumnsG
       </div>
 
       {/* Right — Things to Do */}
-      <div className="p-5">
-        <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
-          <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 5h12M4 10h8M4 15h10" />
-            </svg>
-          </div>
-          <h3 className="text-base font-bold text-slate-800 tracking-tight">Things to Do</h3>
-          <span className="ml-auto text-[11px] font-semibold text-violet-400 bg-violet-50 border border-violet-100 rounded-full px-2 py-0.5 tabular-nums">
-            {doGroups.reduce((n, g) => n + g.tasks.length, 0)}
-          </span>
-        </div>
-
+      <div className="p-6 lg:pl-8">
+        <h3 className="text-[20px] font-bold text-[#172033] mb-5">Things to Do</h3>
         {doGroups.length === 0 ? (
-          <p className="text-sm text-slate-400 italic py-2">No action tasks for this filter.</p>
+          <p className="text-[14px] text-[#94a3b8] italic">No action tasks for this filter.</p>
         ) : (
           doGroups.map((group, i) => (
             <ColumnCategory
@@ -444,7 +251,78 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle }: ColumnsG
   );
 }
 
-/* ── Filter logic (for setup/practice-test blocks) ──────────── */
+/* ── TwoColumnLayout ────────────────────────────────────────── */
+interface TwoColumnLayoutProps {
+  block: PlanBlock;
+  completedIds: Set<string>;
+  onToggle: (id: string) => void;
+  activeFilter: TaskFilter;
+  hideCompleted: boolean;
+}
+
+function TwoColumnLayout({ block, completedIds, onToggle, activeFilter, hideCompleted }: TwoColumnLayoutProps) {
+  const isCategoryFilter = !["All", "Optional", "Completed", "Incomplete"].includes(activeFilter);
+
+  function applyFilters(tasks: PlanTask[]): PlanTask[] {
+    if (isCategoryFilter) return [];
+    let result = tasks;
+    switch (activeFilter) {
+      case "Optional":   result = tasks.filter((t) => t.optional); break;
+      case "Completed":  result = tasks.filter((t) => completedIds.has(t.id)); break;
+      case "Incomplete": result = tasks.filter((t) => !completedIds.has(t.id)); break;
+    }
+    if (hideCompleted) result = result.filter((t) => !completedIds.has(t.id));
+    return result;
+  }
+
+  if (isCategoryFilter) {
+    const catSections = block.sections.filter((s) => s.category === activeFilter);
+    if (catSections.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-10 text-center px-6">
+          <p className="text-[15px] text-[#475569] font-medium">No tasks match "{activeFilter}"</p>
+          <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter</p>
+        </div>
+      );
+    }
+    const filteredWatch: CategoryGroup[] = [];
+    const filteredDo: CategoryGroup[] = [];
+    for (const s of catSections) {
+      const watch = s.tasks.filter((t) => t.type === "video" && (!hideCompleted || !completedIds.has(t.id)));
+      const doT   = s.tasks.filter((t) => t.type !== "video" && (!hideCompleted || !completedIds.has(t.id)));
+      if (watch.length > 0) filteredWatch.push({ category: s.category, icon: s.icon, tasks: watch });
+      if (doT.length > 0)   filteredDo.push({ category: s.category, icon: s.icon, tasks: doT });
+    }
+    return <ColumnsGrid watchGroups={filteredWatch} doGroups={filteredDo} completedIds={completedIds} onToggle={onToggle} />;
+  }
+
+  const watchMap = new Map<string, CategoryGroup>();
+  const doMap    = new Map<string, CategoryGroup>();
+
+  for (const section of block.sections) {
+    const watchTasks = applyFilters(section.tasks.filter((t) => t.type === "video"));
+    const doTasks    = applyFilters(section.tasks.filter((t) => t.type !== "video"));
+    if (watchTasks.length > 0) {
+      if (!watchMap.has(section.category)) watchMap.set(section.category, { category: section.category, icon: section.icon, tasks: [] });
+      watchMap.get(section.category)!.tasks.push(...watchTasks);
+    }
+    if (doTasks.length > 0) {
+      if (!doMap.has(section.category)) doMap.set(section.category, { category: section.category, icon: section.icon, tasks: [] });
+      doMap.get(section.category)!.tasks.push(...doTasks);
+    }
+  }
+
+  return (
+    <ColumnsGrid
+      watchGroups={Array.from(watchMap.values())}
+      doGroups={Array.from(doMap.values())}
+      completedIds={completedIds}
+      onToggle={onToggle}
+    />
+  );
+}
+
+/* ── Filter logic ───────────────────────────────────────────── */
 function filterTasks(tasks: PlanTask[], filter: TaskFilter, completedIds: Set<string>): PlanTask[] {
   switch (filter) {
     case "All":        return tasks;
@@ -455,7 +333,7 @@ function filterTasks(tasks: PlanTask[], filter: TaskFilter, completedIds: Set<st
   }
 }
 
-/* ── Next incomplete block (after current first, then wrap) ── */
+/* ── findNextIncompleteBlock ────────────────────────────────── */
 function findNextIncompleteBlock(
   plan: PlanBlock[],
   currentBlockId: string,
@@ -466,12 +344,10 @@ function findNextIncompleteBlock(
     return required.length > 0 && required.some((t) => !completedIds.has(t.id));
   };
   const currentIdx = plan.findIndex((b) => b.id === currentBlockId);
-  const afterCurrent = plan.slice(currentIdx + 1);
-  const beforeCurrent = plan.slice(0, currentIdx);
-  return [...afterCurrent, ...beforeCurrent].find(isIncomplete) ?? null;
+  return [...plan.slice(currentIdx + 1), ...plan.slice(0, currentIdx)].find(isIncomplete) ?? null;
 }
 
-/* ── DayCompleteCard ───────────────────────────────────────── */
+/* ── DayCompleteCard ────────────────────────────────────────── */
 interface DayCompleteCardProps {
   blockTitle: string;
   nextBlock: PlanBlock | null;
@@ -482,43 +358,33 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
   const isFullPlanDone = nextBlock === null;
 
   return (
-    <div className="mx-4 mt-4 mb-1 rounded-xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-violet-50 px-4 py-3.5 flex items-center gap-3">
-      <div className="shrink-0 w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
-        <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 10l4 4 8-8" />
+    <div className="mx-6 mt-5 mb-1 border border-[#bbf7d0] bg-[#f0fdf4] rounded-[6px] px-4 py-3.5 flex items-center gap-3">
+      <div className="shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+        <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2.5 8l4 4 7-7" />
         </svg>
       </div>
-
       <div className="flex-1 min-w-0">
         {isFullPlanDone ? (
           <>
-            <p className="text-sm font-bold text-emerald-700 leading-snug">Full Plan Complete 🎉</p>
-            <p className="text-xs text-emerald-600/80 mt-0.5 leading-snug">
-              You finished the full PrepFlow plan.
-            </p>
+            <p className="text-[14px] font-bold text-emerald-700">Full Plan Complete!</p>
+            <p className="text-[13px] text-emerald-600/80 mt-0.5">You finished the complete PrepFlow plan.</p>
           </>
         ) : (
           <>
-            <p className="text-sm font-bold text-emerald-700 leading-snug">Day Complete 🎉</p>
-            <p className="text-xs text-slate-500 mt-0.5 leading-snug truncate">
-              You finished <span className="font-semibold text-slate-600">{blockTitle}</span>.
-            </p>
-            <p className="text-xs text-slate-400 mt-0.5 leading-snug truncate">
-              Next: <span className="font-medium text-slate-500">{nextBlock.title}</span>
+            <p className="text-[14px] font-bold text-emerald-700">Day Complete!</p>
+            <p className="text-[13px] text-[#475569] mt-0.5 truncate">
+              Next: <span className="font-medium text-[#172033]">{nextBlock!.title}</span>
             </p>
           </>
         )}
       </div>
-
       {!isFullPlanDone && (
         <button
-          onClick={() => onNavigate(nextBlock.id)}
-          className="shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-700 active:bg-violet-800 px-3 py-1.5 rounded-lg transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+          onClick={() => onNavigate(nextBlock!.id)}
+          className="shrink-0 text-[13px] font-semibold text-white bg-[#2f6bff] hover:bg-[#2560ee] px-3 py-1.5 rounded-[4px] transition-colors focus:outline-none"
         >
-          Go to Next
-          <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 6h8M7 3l3 3-3 3" />
-          </svg>
+          Next →
         </button>
       )}
     </div>
@@ -533,6 +399,7 @@ interface TaskAreaProps {
   onToggleTask: (taskId: string) => void;
   onNavigateTo: (blockId: string) => void;
   activeFilter: TaskFilter;
+  embedded?: boolean;
 }
 
 export default function TaskArea({
@@ -542,148 +409,142 @@ export default function TaskArea({
   onToggleTask,
   onNavigateTo,
   activeFilter,
+  embedded = false,
 }: TaskAreaProps) {
   const [hideCompleted, setHideCompleted] = useState(false);
+  const effectiveHide = embedded ? false : hideCompleted;
 
   if (!block) {
+    if (embedded) return null;
     return (
-      <div className="px-5 lg:px-6 pb-6">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] flex items-center justify-center py-20">
-          <div className="text-center">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <p className="text-sm font-semibold text-slate-500">Select a block from the left panel</p>
-            <p className="text-xs text-slate-400 mt-1">Choose a week and day to get started</p>
-          </div>
+      <div className="flex items-center justify-center py-20 text-center px-6">
+        <div>
+          <p className="text-[15px] font-medium text-[#475569]">Select a day to get started.</p>
+          <p className="text-[13px] text-[#94a3b8] mt-1">Choose a week tab and expand a day.</p>
         </div>
       </div>
     );
   }
 
-  const allRequired = block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional));
+  const allRequired   = block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional));
   const completedCount = allRequired.filter((t) => completedIds.has(t.id)).length;
-  const totalCount = allRequired.length;
-  const pct = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-  const blockDone = totalCount > 0 && pct === 100;
-
+  const totalCount    = allRequired.length;
+  const pct           = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const blockDone     = totalCount > 0 && pct === 100;
   const isCategoryFilter = !["All", "Optional", "Completed", "Incomplete"].includes(activeFilter);
+  const isDayBlock    = block.type === "day";
 
-  /* ── For setup/practice-test blocks — existing stacked layout ── */
   const visibleSections = block.sections
     .map((section) => {
       if (isCategoryFilter && section.category !== activeFilter) {
         return { section, visibleTasks: [] as PlanTask[] };
       }
-      let visibleTasks = filterTasks(section.tasks, activeFilter, completedIds);
-      if (hideCompleted) {
-        visibleTasks = visibleTasks.filter((t) => !completedIds.has(t.id));
-      }
-      return { section, visibleTasks };
+      let tasks = filterTasks(section.tasks, activeFilter, completedIds);
+      if (effectiveHide) tasks = tasks.filter((t) => !completedIds.has(t.id));
+      return { section, visibleTasks: tasks };
     })
     .filter(({ visibleTasks }) => visibleTasks.length > 0);
 
-  const isFiltered = activeFilter !== "All";
-  const visibleCount = visibleSections.reduce((n, { visibleTasks }) => n + visibleTasks.length, 0);
-
   const allBlockTasksHidden =
-    hideCompleted &&
-    block.sections.flatMap((s) => s.tasks).every((t) => completedIds.has(t.id));
+    effectiveHide && block.sections.flatMap((s) => s.tasks).every((t) => completedIds.has(t.id));
 
   const nextIncompleteBlock = blockDone
     ? findNextIncompleteBlock(plan, block.id, completedIds)
     : null;
 
-  const isDayBlock = block.type === "day";
+  /* ── Embedded mode: no outer chrome ─────────────────────── */
+  if (embedded) {
+    const allHidden =
+      block.sections.flatMap((s) => s.tasks).length > 0 &&
+      isCategoryFilter &&
+      block.sections.every((s) => s.category !== activeFilter);
 
+    return (
+      <div>
+        {blockDone && (
+          <DayCompleteCard
+            blockTitle={block.title}
+            nextBlock={nextIncompleteBlock}
+            onNavigate={onNavigateTo}
+          />
+        )}
+        {allHidden ? (
+          <div className="px-6 py-8 text-center">
+            <p className="text-[15px] text-[#475569] font-medium">No tasks match "{activeFilter}"</p>
+            <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
+          </div>
+        ) : isDayBlock ? (
+          <TwoColumnLayout
+            block={block}
+            completedIds={completedIds}
+            onToggle={onToggleTask}
+            activeFilter={activeFilter}
+            hideCompleted={false}
+          />
+        ) : (
+          visibleSections.length === 0 ? (
+            <div className="px-6 py-8 text-center">
+              <p className="text-[15px] text-[#475569] font-medium">No tasks match "{activeFilter}"</p>
+              <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
+            </div>
+          ) : (
+            <div className="px-6 py-5">
+              {visibleSections.map(({ section, visibleTasks }, i) => (
+                <SectionGroup
+                  key={i}
+                  section={section}
+                  visibleTasks={visibleTasks}
+                  completedIds={completedIds}
+                  onToggle={onToggleTask}
+                  isFirst={i === 0}
+                />
+              ))}
+            </div>
+          )
+        )}
+      </div>
+    );
+  }
+
+  /* ── Standalone mode: full panel chrome ─────────────────── */
   return (
     <div className="px-5 lg:px-6 pb-6">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_4px_0_rgba(0,0,0,0.04)] overflow-hidden">
-
-        {/* ── Panel header ── */}
-        <div className="px-5 pt-4 pb-3.5 border-b border-gray-100">
+      <div className="bg-white rounded-[8px] border border-[#e2e8f0] overflow-hidden">
+        {/* Header */}
+        <div className="px-5 pt-5 pb-4 border-b border-[#e8f1f9]">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-slate-900 leading-snug tracking-tight break-words">
-                {block.title}
-              </h2>
-              <p className="text-xs text-slate-400 font-medium mt-1 tabular-nums">
+              <h2 className="text-[18px] font-bold text-[#172033] leading-snug break-words">{block.title}</h2>
+              <p className="text-[13px] text-[#94a3b8] mt-1 tabular-nums">
                 {completedCount} of {totalCount} required tasks completed
               </p>
             </div>
-            <div className="shrink-0 text-right">
-              <span className={`text-3xl font-bold tabular-nums leading-none tracking-tight ${
-                blockDone ? "text-emerald-600" : "text-violet-600"
-              }`}>
-                {pct}%
-              </span>
-              {blockDone && (
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500 mt-0.5">
-                  Complete!
-                </p>
-              )}
-            </div>
+            <span className={`text-[28px] font-bold tabular-nums leading-none shrink-0 ${blockDone ? "text-emerald-600" : "text-[#2f6bff]"}`}>
+              {pct}%
+            </span>
           </div>
 
-          {/* Block progress bar */}
-          <div className="mt-3 h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+          <div className="mt-3 h-1.5 w-full rounded-full bg-[#e8f1f9] overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${blockDone ? "bg-emerald-500" : "bg-violet-500"}`}
+              className={`h-full rounded-full transition-all duration-500 ${blockDone ? "bg-emerald-500" : "bg-[#2f6bff]"}`}
               style={{ width: `${pct}%` }}
             />
           </div>
 
-          {/* Filter indicator + Hide Completed toggle */}
-          <div className="flex items-center justify-between mt-2.5">
-            {isFiltered ? (
-              <p className="text-xs font-bold text-violet-600 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-500 inline-block" />
-                {visibleCount} task{visibleCount !== 1 ? "s" : ""} · {activeFilter}
-              </p>
-            ) : (
-              <span />
-            )}
-
+          <div className="flex items-center justify-end mt-3">
             <button
               onClick={() => setHideCompleted((v) => !v)}
-              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg border transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+              className={`text-[13px] font-medium px-3 py-1 rounded-full border transition-colors focus:outline-none ${
                 hideCompleted
-                  ? "bg-violet-600 border-violet-600 text-white shadow-sm"
-                  : "bg-white border-gray-200 text-slate-500 hover:border-violet-300 hover:text-violet-600"
+                  ? "bg-[#2f6bff] text-white border-[#2f6bff]"
+                  : "text-[#64748b] border-[#e2e8f0] hover:border-[#94a3b8]"
               }`}
-              aria-pressed={hideCompleted}
             >
-              <svg
-                className="w-3 h-3 shrink-0"
-                viewBox="0 0 14 14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                {hideCompleted ? (
-                  <>
-                    <path d="M1 1l12 12" />
-                    <path d="M7 2.5C4 2.5 1.5 7 1.5 7s.7 1.3 2 2.5" />
-                    <path d="M10.5 4.5C11.8 5.7 12.5 7 12.5 7S10 11.5 7 11.5c-.9 0-1.8-.3-2.5-.7" />
-                  </>
-                ) : (
-                  <>
-                    <path d="M1.5 7S4 2.5 7 2.5 12.5 7 12.5 7 10 11.5 7 11.5 1.5 7 1.5 7z" />
-                    <circle cx="7" cy="7" r="1.8" />
-                  </>
-                )}
-              </svg>
-              Hide completed
+              {hideCompleted ? "Show all" : "Hide completed"}
             </button>
           </div>
         </div>
 
-        {/* ── Day complete success card ── */}
         {blockDone && (
           <DayCompleteCard
             blockTitle={block.title}
@@ -692,20 +553,11 @@ export default function TaskArea({
           />
         )}
 
-        {/* ── Day blocks: two-column layout ── */}
         {isDayBlock ? (
           allBlockTasksHidden ? (
-            <div className="flex flex-col items-center justify-center py-14 text-center px-6">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 12l2 2 4-4" />
-                  <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
-                </svg>
-              </div>
-              <p className="text-sm font-semibold text-slate-700">All tasks in this block are completed.</p>
-              <p className="text-xs text-slate-400 mt-1">
-                Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
-              </p>
+            <div className="px-6 py-10 text-center">
+              <p className="text-[15px] text-[#475569] font-medium">All tasks completed.</p>
+              <p className="text-[13px] text-[#94a3b8] mt-1">Click "Show all" to review them.</p>
             </div>
           ) : (
             <TwoColumnLayout
@@ -717,42 +569,29 @@ export default function TaskArea({
             />
           )
         ) : (
-          /* ── Setup / practice-test blocks: existing stacked layout ── */
           allBlockTasksHidden ? (
-            <div className="flex flex-col items-center justify-center py-14 text-center px-6">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 12l2 2 4-4" />
-                  <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
-                </svg>
-              </div>
-              <p className="text-sm font-semibold text-slate-700">All tasks in this block are completed.</p>
-              <p className="text-xs text-slate-400 mt-1">
-                Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
-              </p>
+            <div className="px-6 py-10 text-center">
+              <p className="text-[15px] text-[#475569] font-medium">All tasks completed.</p>
+              <p className="text-[13px] text-[#94a3b8] mt-1">Click "Show all" to review them.</p>
             </div>
           ) : visibleSections.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-14 text-center">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round"
-                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <p className="text-sm font-semibold text-slate-500">No tasks match "{activeFilter}"</p>
-              <p className="text-xs text-slate-400 mt-1">Try a different filter</p>
+            <div className="px-6 py-10 text-center">
+              <p className="text-[15px] text-[#475569] font-medium">No tasks match "{activeFilter}"</p>
+              <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
             </div>
           ) : (
-            visibleSections.map(({ section, visibleTasks }, i) => (
-              <SectionGroup
-                key={i}
-                section={section}
-                visibleTasks={visibleTasks}
-                completedIds={completedIds}
-                onToggle={onToggleTask}
-                isFirst={i === 0}
-              />
-            ))
+            <div className="px-5 py-5">
+              {visibleSections.map(({ section, visibleTasks }, i) => (
+                <SectionGroup
+                  key={i}
+                  section={section}
+                  visibleTasks={visibleTasks}
+                  completedIds={completedIds}
+                  onToggle={onToggleTask}
+                  isFirst={i === 0}
+                />
+              ))}
+            </div>
           )
         )}
       </div>
