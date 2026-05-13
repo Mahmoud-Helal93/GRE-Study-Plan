@@ -6,8 +6,9 @@ import {
   type PlanBlock,
 } from "../data/prepFlowPlan";
 import { type TaskFilter, FILTER_OPTIONS } from "../lib/filters";
-import TaskArea from "./TaskArea";
+import TaskArea, { type TaskActions } from "./TaskArea";
 import SearchResults from "./SearchResults";
+import { usePlanOverrides } from "../hooks/usePlanOverrides";
 
 /* ── Storage ─────────────────────────────────────────────────── */
 const STORAGE_KEY = "prepflow-progress-full-two-month-plan";
@@ -239,11 +240,13 @@ interface DayRowProps {
   onBulkToggle: (block: PlanBlock) => void;
   onNavigateTo: (blockId: string) => void;
   activeFilter: TaskFilter;
+  taskActions: TaskActions;
+  plan: PlanBlock[];
 }
 
 function DayRow({
   block, isExpanded, completedIds,
-  onToggle, onToggleTask, onBulkToggle, onNavigateTo, activeFilter,
+  onToggle, onToggleTask, onBulkToggle, onNavigateTo, activeFilter, taskActions, plan,
 }: DayRowProps) {
   const required = useMemo(
     () => block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional)),
@@ -305,12 +308,13 @@ function DayRow({
         <div className="bg-white">
           <TaskArea
             block={block}
-            plan={prepFlowPlan}
+            plan={plan}
             completedIds={completedIds}
             onToggleTask={onToggleTask}
             onNavigateTo={onNavigateTo}
             activeFilter={activeFilter}
             embedded
+            taskActions={taskActions}
           />
         </div>
       )}
@@ -329,19 +333,44 @@ export default function StudyPlan() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
 
+  /* ── Plan overrides (edit / delete / reorder / add / notes) ── */
+  const {
+    applyOverrides,
+    deleteTask,
+    editTask,
+    moveTask,
+    addTask,
+    getNote,
+    setNote,
+  } = usePlanOverrides();
+
+  const effectivePlan = useMemo(() => applyOverrides(prepFlowPlan), [applyOverrides]);
+
+  const taskActions: TaskActions = useMemo(() => ({
+    onDelete: deleteTask,
+    onEdit: editTask,
+    onMoveUp: (blockId, sectionIdx, taskId, currentOrder) =>
+      moveTask(blockId, sectionIdx, taskId, "up", currentOrder),
+    onMoveDown: (blockId, sectionIdx, taskId, currentOrder) =>
+      moveTask(blockId, sectionIdx, taskId, "down", currentOrder),
+    onAddTask: addTask,
+    getNote,
+    setNote,
+  }), [deleteTask, editTask, moveTask, addTask, getNote, setNote]);
+
   const completedIds = useMemo(
     () => new Set(Object.keys(completedTasks).filter((k) => completedTasks[k])),
     [completedTasks]
   );
 
   const overall = useMemo(
-    () => getOverallProgress(prepFlowPlan, completedIds),
-    [completedIds]
+    () => getOverallProgress(effectivePlan, completedIds),
+    [effectivePlan, completedIds]
   );
 
   const currentBlocks = useMemo(
-    () => (activeWeek >= 0 ? prepFlowPlan.filter((b) => b.week === activeWeek) : []),
-    [activeWeek]
+    () => (activeWeek >= 0 ? effectivePlan.filter((b) => b.week === activeWeek) : []),
+    [activeWeek, effectivePlan]
   );
 
   const isSearching = searchQuery.trim().length > 0;
@@ -363,6 +392,7 @@ export default function StudyPlan() {
 
   const handleBulkToggle = useCallback(
     (block: PlanBlock) => {
+      // Use the block as passed (already has overrides applied)
       const required = block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional));
       const allDone = required.every((t) => completedIds.has(t.id));
       setCompletedTasks((prev) => {
@@ -386,7 +416,7 @@ export default function StudyPlan() {
   }, []);
 
   const handleNavigateTo = useCallback((blockId: string) => {
-    const block = prepFlowPlan.find((b) => b.id === blockId);
+    const block = effectivePlan.find((b) => b.id === blockId);
     if (!block) return;
     setActiveWeek(block.week);
     setExpandedBlockId(blockId);
@@ -574,6 +604,8 @@ export default function StudyPlan() {
                         onBulkToggle={handleBulkToggle}
                         onNavigateTo={handleNavigateTo}
                         activeFilter={activeFilter}
+                        taskActions={taskActions}
+                        plan={effectivePlan}
                       />
                     ))}
                   </div>
