@@ -779,7 +779,7 @@ export default function TaskArea({
   taskActions,
 }: TaskAreaProps) {
   const [hideCompleted, setHideCompleted] = useState(false);
-  const effectiveHide = embedded ? false : hideCompleted;
+  const effectiveHide = hideCompleted;
 
   if (!block) {
     if (embedded) return null;
@@ -826,6 +826,10 @@ export default function TaskArea({
       isCategoryFilter &&
       block.sections.every((s) => s.category !== activeFilter);
 
+    const allCompletedHidden =
+      hideCompleted &&
+      block.sections.flatMap((s) => s.tasks).every((t) => completedIds.has(t.id));
+
     return (
       <div>
         {blockDone && (
@@ -835,10 +839,36 @@ export default function TaskArea({
             onNavigate={onNavigateTo}
           />
         )}
+
+        {/* Hide completed toggle */}
+        <div className="flex justify-end px-5 pt-3 pb-1">
+          <button
+            onClick={() => setHideCompleted((v) => !v)}
+            className={`text-[12px] font-medium px-2.5 py-1 rounded-full border transition-colors focus:outline-none ${
+              hideCompleted
+                ? "bg-[#2f6bff] text-white border-[#2f6bff]"
+                : "text-[#94a3b8] border-[#e2e8f0] hover:border-[#94a3b8] hover:text-[#475569]"
+            }`}
+          >
+            {hideCompleted ? "Show all" : "Hide completed"}
+          </button>
+        </div>
+
         {allHidden ? (
           <div className="px-6 py-8 text-center">
             <p className="text-[15px] text-[#475569] font-medium">No tasks match "{activeFilter}"</p>
             <p className="text-[13px] text-[#94a3b8] mt-1">Try a different filter.</p>
+          </div>
+        ) : allCompletedHidden ? (
+          <div className="px-6 py-8 text-center">
+            <p className="text-[15px] text-[#475569] font-medium">All tasks completed.</p>
+            <p className="text-[13px] text-[#94a3b8] mt-1">
+              Click{" "}
+              <button onClick={() => setHideCompleted(false)} className="text-[#2f6bff] hover:underline focus:outline-none">
+                Show all
+              </button>{" "}
+              to review them.
+            </p>
           </div>
         ) : isDayBlock ? (
           <TwoColumnLayout
@@ -846,7 +876,7 @@ export default function TaskArea({
             completedIds={completedIds}
             onToggle={onToggleTask}
             activeFilter={activeFilter}
-            hideCompleted={false}
+            hideCompleted={hideCompleted}
             taskActions={taskActions}
           />
         ) : (
