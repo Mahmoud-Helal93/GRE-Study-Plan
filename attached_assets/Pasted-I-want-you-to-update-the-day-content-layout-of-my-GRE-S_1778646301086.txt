@@ -1,0 +1,51 @@
+I want you to update the day content layout of my GRE Study Plan website.
+
+Repository context:
+This is my GRE Study Plan app. Please inspect the whole codebase first before making changes. Understand the current component structure, data structure, styling system, and how each study day is currently rendered.
+
+Main goal:
+Change the visual layout inside each expanded day so that every day is organized into two clean columns:
+
+1. Things to Watch
+2. Things to Do
+
+Use the attached reference screenshot from GregMat as the visual inspiration.
+
+Important:
+Do NOT remove or break any existing functionality.
+Keep all current features working exactly as they do now, including:
+- Editing items
+- Deleting items
+- Adding items
+- Marking items as done
+- Expanding/collapsing days
+- Any existing checkboxes, buttons, actions, saved state, local storage, or database logic
+- Any current navigation and weekly structure
+- Any current section headers such as Week 1 - Day 1, Week 1 - Day 2, etc.
+
+Only change the presentation/layout of the daily content.
+
+Required layout change:
+When a day is expanded, its content should appear in a clean two-column layout:
+
+Left column:
+Heading: Things to Watch
+
+Right column:
+Heading: Things to Do
+
+Each column should contain the relevant items for that day.
+
+Visual design requirements:
+- Use a clean, modern study-plan style similar to the screenshot.
+- Use generous spacing between lines.
+- Use clear typography hierarchy.
+- Headings should be bold and larger than the list items.
+- List items should use bullet points.
+- Nested items should be indented clearly.
+- Links should remain blue and clickable.
+- Optional notes can use a muted purple tone if already supported by the current style.
+- Important day references such as “Day 2” can use a red highlight if already present in the data.
+- Keep the overall page clean and readable.
+- Do not make the design crowded.
+- The layout should feel close to GregMat’s study plan layout but still match my current website identity.

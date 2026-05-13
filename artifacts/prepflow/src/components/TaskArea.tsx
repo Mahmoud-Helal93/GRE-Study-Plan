@@ -133,7 +133,7 @@ function TaskRow({ task, completed, onToggle }: TaskRowProps) {
   );
 }
 
-/* ── SectionGroup ──────────────────────────────────────────── */
+/* ── SectionGroup (used for setup/practice-test blocks) ─────── */
 interface SectionGroupProps {
   section: PlanSection;
   visibleTasks: PlanTask[];
@@ -194,7 +194,257 @@ function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst }
   );
 }
 
-/* ── Filter logic ──────────────────────────────────────────── */
+/* ── Column category group (used inside the two-column layout) ── */
+interface ColumnCategoryProps {
+  category: string;
+  icon: string;
+  tasks: PlanTask[];
+  completedIds: Set<string>;
+  onToggle: (id: string) => void;
+  isFirst: boolean;
+}
+
+function ColumnCategory({ category, icon, tasks, completedIds, onToggle, isFirst }: ColumnCategoryProps) {
+  const colors = getCategoryColor(category);
+  const required = tasks.filter((t) => !t.optional);
+  const done = required.filter((t) => completedIds.has(t.id)).length;
+  const total = required.length;
+  const isDone = total > 0 && done === total;
+
+  if (tasks.length === 0) return null;
+
+  return (
+    <div className={!isFirst ? "mt-5 pt-5 border-t border-gray-100" : ""}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-sm leading-none">{icon}</span>
+        <span className={`text-[11px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-md ${colors.bg} ${colors.text}`}>
+          {category}
+        </span>
+        {total > 0 && (
+          <span className={`ml-auto text-[11px] font-semibold tabular-nums ${isDone ? "text-emerald-600" : "text-slate-400"}`}>
+            {done}/{total}
+          </span>
+        )}
+        {isDone && (
+          <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2 6l3 3 5-5" />
+          </svg>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        {tasks.map((task) => (
+          <TaskRow
+            key={task.id}
+            task={task}
+            completed={completedIds.has(task.id)}
+            onToggle={onToggle}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Two-column day layout ──────────────────────────────────── */
+interface TwoColumnLayoutProps {
+  block: PlanBlock;
+  completedIds: Set<string>;
+  onToggle: (id: string) => void;
+  activeFilter: TaskFilter;
+  hideCompleted: boolean;
+}
+
+type CategoryGroup = {
+  category: string;
+  icon: string;
+  tasks: PlanTask[];
+};
+
+function TwoColumnLayout({ block, completedIds, onToggle, activeFilter, hideCompleted }: TwoColumnLayoutProps) {
+  const isCategoryFilter = !["All", "Optional", "Completed", "Incomplete"].includes(activeFilter);
+
+  function applyFilters(tasks: PlanTask[]): PlanTask[] {
+    let result = tasks;
+    if (isCategoryFilter) return [];
+    switch (activeFilter) {
+      case "Optional":   result = tasks.filter((t) => t.optional); break;
+      case "Completed":  result = tasks.filter((t) => completedIds.has(t.id)); break;
+      case "Incomplete": result = tasks.filter((t) => !completedIds.has(t.id)); break;
+    }
+    if (hideCompleted) result = result.filter((t) => !completedIds.has(t.id));
+    return result;
+  }
+
+  const watchMap = new Map<string, CategoryGroup>();
+  const doMap = new Map<string, CategoryGroup>();
+
+  for (const section of block.sections) {
+    const watchTasks: PlanTask[] = [];
+    const doTasks: PlanTask[] = [];
+
+    for (const task of section.tasks) {
+      if (task.type === "video") {
+        watchTasks.push(task);
+      } else {
+        doTasks.push(task);
+      }
+    }
+
+    if (watchTasks.length > 0) {
+      const key = section.category;
+      if (!watchMap.has(key)) {
+        watchMap.set(key, { category: section.category, icon: section.icon, tasks: [] });
+      }
+      watchMap.get(key)!.tasks.push(...watchTasks);
+    }
+
+    if (doTasks.length > 0) {
+      const key = section.category;
+      if (!doMap.has(key)) {
+        doMap.set(key, { category: section.category, icon: section.icon, tasks: [] });
+      }
+      doMap.get(key)!.tasks.push(...doTasks);
+    }
+  }
+
+  const watchGroups: CategoryGroup[] = [];
+  for (const group of watchMap.values()) {
+    const filtered = applyFilters(group.tasks);
+    if (filtered.length > 0) {
+      watchGroups.push({ ...group, tasks: filtered });
+    }
+  }
+
+  const doGroups: CategoryGroup[] = [];
+  for (const group of doMap.values()) {
+    const filtered = applyFilters(group.tasks);
+    if (filtered.length > 0) {
+      doGroups.push({ ...group, tasks: filtered });
+    }
+  }
+
+  const isCatFiltered = isCategoryFilter;
+
+  if (isCatFiltered) {
+    const catSections = block.sections.filter((s) => s.category === activeFilter);
+    if (catSections.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center py-14 text-center">
+          <p className="text-sm font-semibold text-slate-500">No tasks match "{activeFilter}"</p>
+          <p className="text-xs text-slate-400 mt-1">Try a different filter</p>
+        </div>
+      );
+    }
+    const filteredWatch: CategoryGroup[] = [];
+    const filteredDo: CategoryGroup[] = [];
+    for (const s of catSections) {
+      const watch = hideCompleted ? s.tasks.filter((t) => t.type === "video" && !completedIds.has(t.id)) : s.tasks.filter((t) => t.type === "video");
+      const doT = hideCompleted ? s.tasks.filter((t) => t.type !== "video" && !completedIds.has(t.id)) : s.tasks.filter((t) => t.type !== "video");
+      if (watch.length > 0) filteredWatch.push({ category: s.category, icon: s.icon, tasks: watch });
+      if (doT.length > 0) filteredDo.push({ category: s.category, icon: s.icon, tasks: doT });
+    }
+    return <ColumnsGrid watchGroups={filteredWatch} doGroups={filteredDo} completedIds={completedIds} onToggle={onToggle} />;
+  }
+
+  return <ColumnsGrid watchGroups={watchGroups} doGroups={doGroups} completedIds={completedIds} onToggle={onToggle} />;
+}
+
+/* ── Columns grid ─────────────────────────────────────────── */
+interface ColumnsGridProps {
+  watchGroups: CategoryGroup[];
+  doGroups: CategoryGroup[];
+  completedIds: Set<string>;
+  onToggle: (id: string) => void;
+}
+
+function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle }: ColumnsGridProps) {
+  const isEmpty = watchGroups.length === 0 && doGroups.length === 0;
+
+  if (isEmpty) {
+    return (
+      <div className="flex flex-col items-center justify-center py-14 text-center px-6">
+        <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+          <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 12l2 2 4-4" />
+            <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
+          </svg>
+        </div>
+        <p className="text-sm font-semibold text-slate-700">All tasks completed or hidden.</p>
+        <p className="text-xs text-slate-400 mt-1">
+          Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+      {/* Left — Things to Watch */}
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
+          <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-rose-500" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="5,3 19,10 5,17" />
+            </svg>
+          </div>
+          <h3 className="text-base font-bold text-slate-800 tracking-tight">Things to Watch</h3>
+          <span className="ml-auto text-[11px] font-semibold text-rose-400 bg-rose-50 border border-rose-100 rounded-full px-2 py-0.5 tabular-nums">
+            {watchGroups.reduce((n, g) => n + g.tasks.length, 0)}
+          </span>
+        </div>
+
+        {watchGroups.length === 0 ? (
+          <p className="text-sm text-slate-400 italic py-2">No watch tasks for this filter.</p>
+        ) : (
+          watchGroups.map((group, i) => (
+            <ColumnCategory
+              key={`watch-${group.category}-${i}`}
+              category={group.category}
+              icon={group.icon}
+              tasks={group.tasks}
+              completedIds={completedIds}
+              onToggle={onToggle}
+              isFirst={i === 0}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Right — Things to Do */}
+      <div className="p-5">
+        <div className="flex items-center gap-2 mb-5 pb-3 border-b border-gray-100">
+          <div className="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-violet-500" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 5h12M4 10h8M4 15h10" />
+            </svg>
+          </div>
+          <h3 className="text-base font-bold text-slate-800 tracking-tight">Things to Do</h3>
+          <span className="ml-auto text-[11px] font-semibold text-violet-400 bg-violet-50 border border-violet-100 rounded-full px-2 py-0.5 tabular-nums">
+            {doGroups.reduce((n, g) => n + g.tasks.length, 0)}
+          </span>
+        </div>
+
+        {doGroups.length === 0 ? (
+          <p className="text-sm text-slate-400 italic py-2">No action tasks for this filter.</p>
+        ) : (
+          doGroups.map((group, i) => (
+            <ColumnCategory
+              key={`do-${group.category}-${i}`}
+              category={group.category}
+              icon={group.icon}
+              tasks={group.tasks}
+              completedIds={completedIds}
+              onToggle={onToggle}
+              isFirst={i === 0}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Filter logic (for setup/practice-test blocks) ──────────── */
 function filterTasks(tasks: PlanTask[], filter: TaskFilter, completedIds: Set<string>): PlanTask[] {
   switch (filter) {
     case "All":        return tasks;
@@ -233,14 +483,12 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
 
   return (
     <div className="mx-4 mt-4 mb-1 rounded-xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-violet-50 px-4 py-3.5 flex items-center gap-3">
-      {/* Icon */}
       <div className="shrink-0 w-9 h-9 rounded-lg bg-emerald-100 flex items-center justify-center">
         <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M4 10l4 4 8-8" />
         </svg>
       </div>
 
-      {/* Text */}
       <div className="flex-1 min-w-0">
         {isFullPlanDone ? (
           <>
@@ -262,7 +510,6 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
         )}
       </div>
 
-      {/* Button */}
       {!isFullPlanDone && (
         <button
           onClick={() => onNavigate(nextBlock.id)}
@@ -325,6 +572,7 @@ export default function TaskArea({
 
   const isCategoryFilter = !["All", "Optional", "Completed", "Incomplete"].includes(activeFilter);
 
+  /* ── For setup/practice-test blocks — existing stacked layout ── */
   const visibleSections = block.sections
     .map((section) => {
       if (isCategoryFilter && section.category !== activeFilter) {
@@ -348,6 +596,8 @@ export default function TaskArea({
   const nextIncompleteBlock = blockDone
     ? findNextIncompleteBlock(plan, block.id, completedIds)
     : null;
+
+  const isDayBlock = block.type === "day";
 
   return (
     <div className="px-5 lg:px-6 pb-6">
@@ -442,42 +692,68 @@ export default function TaskArea({
           />
         )}
 
-        {/* ── Sections ── */}
-        {allBlockTasksHidden ? (
-          <div className="flex flex-col items-center justify-center py-14 text-center px-6">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
-              <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 12l2 2 4-4" />
-                <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
-              </svg>
+        {/* ── Day blocks: two-column layout ── */}
+        {isDayBlock ? (
+          allBlockTasksHidden ? (
+            <div className="flex flex-col items-center justify-center py-14 text-center px-6">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12l2 2 4-4" />
+                  <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-slate-700">All tasks in this block are completed.</p>
+              <p className="text-xs text-slate-400 mt-1">
+                Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
+              </p>
             </div>
-            <p className="text-sm font-semibold text-slate-700">All tasks in this block are completed.</p>
-            <p className="text-xs text-slate-400 mt-1">
-              Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
-            </p>
-          </div>
-        ) : visibleSections.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-14 text-center">
-            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
-              <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round"
-                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <p className="text-sm font-semibold text-slate-500">No tasks match "{activeFilter}"</p>
-            <p className="text-xs text-slate-400 mt-1">Try a different filter</p>
-          </div>
-        ) : (
-          visibleSections.map(({ section, visibleTasks }, i) => (
-            <SectionGroup
-              key={i}
-              section={section}
-              visibleTasks={visibleTasks}
+          ) : (
+            <TwoColumnLayout
+              block={block}
               completedIds={completedIds}
               onToggle={onToggleTask}
-              isFirst={i === 0}
+              activeFilter={activeFilter}
+              hideCompleted={hideCompleted}
             />
-          ))
+          )
+        ) : (
+          /* ── Setup / practice-test blocks: existing stacked layout ── */
+          allBlockTasksHidden ? (
+            <div className="flex flex-col items-center justify-center py-14 text-center px-6">
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 12l2 2 4-4" />
+                  <path d="M12 3a9 9 0 100 18A9 9 0 0012 3z" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-slate-700">All tasks in this block are completed.</p>
+              <p className="text-xs text-slate-400 mt-1">
+                Turn off <span className="font-semibold text-slate-500">"Hide completed"</span> to review them.
+              </p>
+            </div>
+          ) : visibleSections.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-14 text-center">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="text-sm font-semibold text-slate-500">No tasks match "{activeFilter}"</p>
+              <p className="text-xs text-slate-400 mt-1">Try a different filter</p>
+            </div>
+          ) : (
+            visibleSections.map(({ section, visibleTasks }, i) => (
+              <SectionGroup
+                key={i}
+                section={section}
+                visibleTasks={visibleTasks}
+                completedIds={completedIds}
+                onToggle={onToggleTask}
+                isFirst={i === 0}
+              />
+            ))
+          )
         )}
       </div>
     </div>
