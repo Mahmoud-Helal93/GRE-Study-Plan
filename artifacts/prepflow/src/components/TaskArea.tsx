@@ -168,7 +168,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 onChange={(e) => setEditValue(e.target.value)}
                 onKeyDown={handleEditKeyDown}
                 onBlur={handleEditSave}
-                className="flex-1 text-[15px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-0.5 focus:outline-none bg-white"
+                className="flex-1 text-[16px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-0.5 focus:outline-none bg-white"
               />
               <button
                 onMouseDown={(e) => { e.preventDefault(); handleEditSave(); }}
@@ -190,7 +190,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className={`text-[15px] leading-[1.8] break-words ${
+                className={`text-[16px] leading-[1.8] break-words ${
                   completed ? "line-through text-[#94a3b8]" : "text-[#1a6edf] hover:underline"
                 }`}
               >
@@ -204,13 +204,13 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
             <>
               <button onClick={() => onToggle(task.id)} className="w-full text-left focus:outline-none">
                 <span
-                  className={`text-[15px] leading-[1.8] break-words ${
+                  className={`text-[16px] leading-[1.8] break-words ${
                     completed ? "line-through text-[#94a3b8]" : "text-[#172033]"
                   }`}
                 >
                   {task.title}
                   {task.optional && (
-                    <span className="text-[#94a3b8] text-[13px] ml-1.5">(optional)</span>
+                    <span className="text-[#94a3b8] text-[14px] ml-1.5">(optional)</span>
                   )}
                 </span>
               </button>
@@ -223,7 +223,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[15px] text-[#1a6edf] hover:underline leading-[1.8] break-words"
+                      className="text-[16px] text-[#1a6edf] hover:underline leading-[1.8] break-words"
                     >
                       {link.text || link.url}
                     </a>
@@ -363,7 +363,7 @@ function AddTaskRow({ blockId, sectionIdx, taskActions }: AddTaskRowProps) {
     return (
       <button
         onClick={handleOpen}
-        className="flex items-center gap-1.5 mt-1.5 text-[13px] text-[#94a3b8] hover:text-[#2f6bff] transition-colors focus:outline-none group"
+        className="flex items-center gap-1.5 mt-1.5 text-[14px] text-[#94a3b8] hover:text-[#2f6bff] transition-colors focus:outline-none group"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M7 2v10M2 7h10" />
@@ -381,7 +381,7 @@ function AddTaskRow({ blockId, sectionIdx, taskActions }: AddTaskRowProps) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="New task title…"
-        className="flex-1 text-[14px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-1 focus:outline-none bg-white placeholder-[#94a3b8]"
+        className="flex-1 text-[15px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-1 focus:outline-none bg-white placeholder-[#94a3b8]"
       />
       <button
         onClick={handleAdd}
@@ -436,13 +436,13 @@ function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst, 
     <div className={!isFirst ? "mt-7 pt-7 border-t border-[#e8f1f9]" : ""}>
       <div className="flex items-center gap-2 mb-3">
         {section.icon && <span className="text-[16px] leading-none">{section.icon}</span>}
-        <span className="text-[17px] font-bold text-[#172033]">{section.category}</span>
+        <span className="text-[18px] font-bold text-[#172033]">{section.category}</span>
         {isDone && (
           <svg className="w-4 h-4 text-emerald-500 ml-1" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.5 7l3 3 6-6" />
           </svg>
         )}
-        <span className="ml-auto text-[13px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
+        <span className="ml-auto text-[14px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
       </div>
       <div className="flex flex-col">
         {visibleTasks.map((task) => (
@@ -491,7 +491,7 @@ function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, bloc
   return (
     <div className={!isFirst ? "mt-5 pt-5 border-t border-[#e8f1f9]" : ""}>
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-[13px] font-semibold text-[#475569] uppercase tracking-wider">
+        <span className="text-[14px] font-semibold text-[#475569] uppercase tracking-wider">
           {category}
         </span>
         {isDone && (
@@ -499,7 +499,7 @@ function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, bloc
             <path d="M2.5 7l3 3 6-6" />
           </svg>
         )}
-        <span className="ml-auto text-[12px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
+        <span className="ml-auto text-[13px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
       </div>
       <div className="flex flex-col">
         {tasks.map((task) => (
@@ -551,7 +551,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
     <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#e8f1f9]">
       {/* Left — Things to Watch */}
       <div className="p-6 lg:pr-8">
-        <h3 className="text-[20px] font-bold text-[#172033] mb-5">Things to Watch</h3>
+        <h3 className="text-[21px] font-bold text-[#172033] mb-5">Things to Watch</h3>
         {watchGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
         ) : (
@@ -574,7 +574,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
 
       {/* Right — Things to Do */}
       <div className="p-6 lg:pl-8">
-        <h3 className="text-[20px] font-bold text-[#172033] mb-5">Things to Do</h3>
+        <h3 className="text-[21px] font-bold text-[#172033] mb-5">Things to Do</h3>
         {doGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No action tasks for this filter.</p>
         ) : (
@@ -728,8 +728,8 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
       <div className="flex-1 min-w-0">
         {isFullPlanDone ? (
           <>
-            <p className="text-[14px] font-bold text-emerald-700">Full Plan Complete!</p>
-            <p className="text-[13px] text-emerald-600/80 mt-0.5">You finished the complete PrepFlow plan.</p>
+            <p className="text-[15px] font-bold text-emerald-700">Full Plan Complete!</p>
+            <p className="text-[14px] text-emerald-600/80 mt-0.5">You finished the complete PrepFlow plan.</p>
           </>
         ) : (
           <>

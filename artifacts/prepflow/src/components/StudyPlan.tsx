@@ -103,25 +103,25 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
   }, [completedIds]);
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-[38px] font-bold text-[#1a237e] mb-2 tracking-tight leading-tight">
+    <div className="w-full">
+      <h1 className="text-[42px] font-bold text-[#1a237e] mb-2 tracking-tight leading-tight">
         GRE Study Plan
       </h1>
-      <p className="text-[16px] text-[#64748b] mb-10">
+      <p className="text-[17px] text-[#64748b] mb-10">
         A clean, organized two-month roadmap for GRE preparation.
       </p>
 
       {/* Progress summary */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
         <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
-          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Overall Progress</span>
+          <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Overall Progress</span>
         </div>
         <div className="bg-white px-6 py-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[15px] font-semibold text-[#1a237e]">
+            <span className="text-[16px] font-semibold text-[#1a237e]">
               {overall.completed} / {overall.total} tasks
             </span>
-            <span className="text-[22px] font-bold text-[#1565c0] tabular-nums">{overall.pct}%</span>
+            <span className="text-[24px] font-bold text-[#1565c0] tabular-nums">{overall.pct}%</span>
           </div>
           <div className="h-2 w-full rounded-full bg-[#e2eaf4] overflow-hidden mb-2">
             <div
@@ -130,7 +130,7 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
             />
           </div>
           {completedDays > 0 && (
-            <p className="text-[12px] text-[#94a3b8]">
+            <p className="text-[13px] text-[#94a3b8]">
               {completedDays} of {prepFlowPlan.length} days fully completed
             </p>
           )}
@@ -140,14 +140,14 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
       {/* Per-week grid */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
         <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
-          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Weekly Progress</span>
+          <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Weekly Progress</span>
         </div>
         <div className="bg-white px-6 py-5 flex flex-col gap-3">
           {weekData.map(({ label, week, done, total, pct }) => (
             <div key={week} className="flex items-center gap-4">
               <button
                 onClick={() => onNavigate(week)}
-                className="w-36 shrink-0 text-left text-[13px] font-medium text-[#1565c0] hover:underline"
+                className="w-36 shrink-0 text-left text-[14px] font-medium text-[#1565c0] hover:underline"
               >
                 {label}
               </button>
@@ -157,7 +157,7 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-[12px] text-[#94a3b8] tabular-nums w-14 text-right shrink-0">
+              <span className="text-[13px] text-[#94a3b8] tabular-nums w-14 text-right shrink-0">
                 {done}/{total}
               </span>
             </div>
@@ -168,7 +168,7 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
       {/* Quick nav */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden">
         <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
-          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Quick Navigation</span>
+          <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Quick Navigation</span>
         </div>
         <div className="bg-white px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {weekData.map(({ label, week, pct }) => (
@@ -177,7 +177,7 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
               onClick={() => onNavigate(week)}
               className="flex items-center gap-3 text-left px-4 py-2.5 rounded-[6px] border border-[#e2eaf4] hover:border-[#93b8de] hover:bg-[#f4f8fd] transition-colors group"
             >
-              <span className="text-[14px] font-medium text-[#1a237e] group-hover:text-[#1565c0] transition-colors flex-1 min-w-0">
+              <span className="text-[15px] font-medium text-[#1a237e] group-hover:text-[#1565c0] transition-colors flex-1 min-w-0">
                 {label}
               </span>
               {pct === 100 ? (
@@ -234,7 +234,7 @@ function DayRow({
         }`}
         onClick={() => onToggle(block.id)}
       >
-        <span className="flex-1 text-[14.5px] font-medium text-[#1e2d4d] leading-snug min-w-0">
+        <span className="flex-1 text-[16px] font-medium text-[#1e2d4d] leading-snug min-w-0">
           {block.title}
         </span>
 
@@ -257,7 +257,7 @@ function DayRow({
               </svg>
             )}
           </div>
-          <span className="text-[13.5px] text-[#475569]">Done</span>
+          <span className="text-[15px] text-[#475569]">Done</span>
         </button>
 
         <ChevronIcon open={isExpanded} />
@@ -422,7 +422,7 @@ export default function StudyPlan() {
 
       {/* ── Header ───────────────────────────────────────────── */}
       <header className="border-b border-[#d9e4f0] bg-white sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-6 flex items-stretch h-14 gap-0">
+        <div className="w-full px-8 flex items-stretch h-16 gap-0">
 
           {/* Logo */}
           <button
@@ -432,7 +432,7 @@ export default function StudyPlan() {
             <div className="w-8 h-8 rounded-[6px] bg-[#1a237e] flex items-center justify-center text-white shrink-0">
               <GraduationCapIcon />
             </div>
-            <span className="text-[15px] font-bold text-[#1a237e] whitespace-nowrap group-hover:text-[#1565c0] transition-colors">
+            <span className="text-[16px] font-bold text-[#1a237e] whitespace-nowrap group-hover:text-[#1565c0] transition-colors">
               GRE Study Plan
             </span>
           </button>
@@ -443,7 +443,7 @@ export default function StudyPlan() {
               <button
                 key={week}
                 onClick={() => handleWeekChange(week)}
-                className={`px-4 text-[14px] whitespace-nowrap border-b-2 transition-colors focus:outline-none font-medium ${
+                className={`px-4 text-[15px] whitespace-nowrap border-b-2 transition-colors focus:outline-none font-medium ${
                   activeWeek === week && !isSearching
                     ? "text-[#1565c0] border-[#1565c0]"
                     : "text-[#64748b] border-transparent hover:text-[#334155]"
@@ -500,7 +500,7 @@ export default function StudyPlan() {
       </header>
 
       {/* ── Main ─────────────────────────────────────────────── */}
-      <main className="max-w-5xl mx-auto px-6 py-10">
+      <main className="w-full px-8 py-10">
 
         {isSearching ? (
           /* ── Search results ──────────────────────────────── */
@@ -537,17 +537,17 @@ export default function StudyPlan() {
           <>
             {/* Page title */}
             <div className="mb-8">
-              <h1 className="text-[36px] font-bold text-[#1a237e] leading-tight tracking-tight">
+              <h1 className="text-[40px] font-bold text-[#1a237e] leading-tight tracking-tight">
                 {pageTitle}
               </h1>
-              <p className="text-[15px] text-[#64748b] mt-2">{pageSubtitle}</p>
+              <p className="text-[16px] text-[#64748b] mt-2">{pageSubtitle}</p>
             </div>
 
             {/* Filter toggle */}
             <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => setShowFilters((v) => !v)}
-                className="text-[13px] text-[#64748b] hover:text-[#334155] flex items-center gap-1.5 transition-colors focus:outline-none"
+                className="text-[14px] text-[#64748b] hover:text-[#334155] flex items-center gap-1.5 transition-colors focus:outline-none"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 4h12M4 8h8M6 12h4" />
@@ -562,7 +562,7 @@ export default function StudyPlan() {
 
               <button
                 onClick={handleReset}
-                className="text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors focus:outline-none"
+                className="text-[13px] text-[#94a3b8] hover:text-[#475569] transition-colors focus:outline-none"
                 title="Reset all progress"
               >
                 Reset progress
@@ -576,7 +576,7 @@ export default function StudyPlan() {
                   <button
                     key={filter}
                     onClick={() => setActiveFilter(filter)}
-                    className={`px-3 py-[5px] text-[13px] font-medium rounded-full border transition-colors focus:outline-none ${
+                    className={`px-3 py-[5px] text-[14px] font-medium rounded-full border transition-colors focus:outline-none ${
                       activeFilter === filter
                         ? "bg-[#1565c0] text-white border-[#1565c0]"
                         : "text-[#64748b] border-[#d9e4f0] hover:border-[#93b8de] hover:text-[#334155] bg-white"
