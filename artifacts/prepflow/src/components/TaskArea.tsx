@@ -10,7 +10,7 @@ export interface TaskActions {
   onEdit: (taskId: string, newTitle: string) => void;
   onMoveUp: (blockId: string, sectionIdx: number, taskId: string, currentOrder: string[]) => void;
   onMoveDown: (blockId: string, sectionIdx: number, taskId: string, currentOrder: string[]) => void;
-  onAddTask: (blockId: string, sectionIdx: number, title: string) => void;
+  onAddTask: (blockId: string, sectionIdx: number, title: string, taskType?: PlanTask["type"]) => void;
   getNote: (taskId: string) => TaskNote | null;
   setNote: (taskId: string, note: TaskNote) => void;
 }
@@ -334,9 +334,10 @@ interface AddTaskRowProps {
   blockId: string;
   sectionIdx: number;
   taskActions: TaskActions;
+  defaultType?: PlanTask["type"];
 }
 
-function AddTaskRow({ blockId, sectionIdx, taskActions }: AddTaskRowProps) {
+function AddTaskRow({ blockId, sectionIdx, taskActions, defaultType = "other" }: AddTaskRowProps) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -349,7 +350,7 @@ function AddTaskRow({ blockId, sectionIdx, taskActions }: AddTaskRowProps) {
   const handleAdd = () => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    taskActions.onAddTask(blockId, sectionIdx, trimmed);
+    taskActions.onAddTask(blockId, sectionIdx, trimmed, defaultType);
     setValue("");
     setOpen(false);
   };
@@ -476,9 +477,10 @@ interface ColumnCategoryProps {
   blockId: string;
   sectionIdx: number;
   taskActions?: TaskActions;
+  defaultType?: PlanTask["type"];
 }
 
-function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, blockId, sectionIdx, taskActions }: ColumnCategoryProps) {
+function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, blockId, sectionIdx, taskActions, defaultType = "other" }: ColumnCategoryProps) {
   const required = tasks.filter((t) => !t.optional);
   const done = required.filter((t) => completedIds.has(t.id)).length;
   const total = required.length;
@@ -516,7 +518,7 @@ function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, bloc
         ))}
       </div>
       {taskActions && (
-        <AddTaskRow blockId={blockId} sectionIdx={sectionIdx} taskActions={taskActions} />
+        <AddTaskRow blockId={blockId} sectionIdx={sectionIdx} taskActions={taskActions} defaultType={defaultType} />
       )}
     </div>
   );
@@ -567,6 +569,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
               blockId={blockId}
               sectionIdx={group.sectionIdx}
               taskActions={taskActions}
+              defaultType="video"
             />
           ))
         )}
@@ -590,6 +593,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
               blockId={blockId}
               sectionIdx={group.sectionIdx}
               taskActions={taskActions}
+              defaultType="other"
             />
           ))
         )}
