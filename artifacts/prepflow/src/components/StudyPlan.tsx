@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import {
   prepFlowPlan,
   getOverallProgress,
@@ -294,8 +294,11 @@ export default function StudyPlan() {
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
   const [showFilters, setShowFilters] = useState(false);
 
+  const importInputRef = useRef<HTMLInputElement>(null);
+
   /* ── Plan overrides ─────────────────────────────────────────── */
   const {
+    overrides,
     applyOverrides,
     deleteTask,
     editTask,
@@ -303,6 +306,7 @@ export default function StudyPlan() {
     addTask,
     getNote,
     setNote,
+    replaceAll: replaceOverrides,
   } = usePlanOverrides();
 
   const effectivePlan = useMemo(() => applyOverrides(prepFlowPlan), [applyOverrides]);
@@ -374,6 +378,54 @@ export default function StudyPlan() {
       localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
+
+  const handleExport = useCallback(() => {
+    const payload = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      progress: completedTasks,
+      overrides,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `prepflow-progress-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [completedTasks, overrides]);
+
+  const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target?.result as string);
+        if (!parsed || typeof parsed !== "object" || parsed.version !== 1) {
+          alert("Invalid progress file. Please use a file exported from this app.");
+          return;
+        }
+        const progress: Record<string, boolean> =
+          parsed.progress && typeof parsed.progress === "object" ? parsed.progress : {};
+        saveToStorage(progress);
+        setCompletedTasks(progress);
+        if (parsed.overrides && typeof parsed.overrides === "object") {
+          replaceOverrides({
+            deletedTaskIds: parsed.overrides.deletedTaskIds ?? [],
+            editedTasks: parsed.overrides.editedTasks ?? {},
+            sectionOrders: parsed.overrides.sectionOrders ?? {},
+            customTasks: parsed.overrides.customTasks ?? {},
+            taskNotes: parsed.overrides.taskNotes ?? {},
+          });
+        }
+      } catch {
+        alert("Could not read the file. Make sure it is a valid progress export.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }, [replaceOverrides]);
 
   const handleNavigateTo = useCallback((blockId: string) => {
     const block = effectivePlan.find((b) => b.id === blockId);
@@ -454,8 +506,41 @@ export default function StudyPlan() {
             ))}
           </div>
 
+          {/* Export / Import buttons */}
+          <div className="flex items-center gap-1 shrink-0 ml-2">
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleImport}
+            />
+            <button
+              onClick={handleExport}
+              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+              aria-label="Export progress"
+              title="Export progress"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v12M7 10l5 5 5-5" />
+                <path d="M5 19h14" />
+              </svg>
+            </button>
+            <button
+              onClick={() => importInputRef.current?.click()}
+              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+              aria-label="Import progress"
+              title="Import progress"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 21V9M7 14l5-5 5 5" />
+                <path d="M5 5h14" />
+              </svg>
+            </button>
+          </div>
+
           {/* Search icon / input */}
-          <div className="flex items-center gap-2 shrink-0 ml-2">
+          <div className="flex items-center gap-2 shrink-0 ml-1">
             {searchOpen ? (
               <div className="flex items-center gap-2">
                 <div className="relative">

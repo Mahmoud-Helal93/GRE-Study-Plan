@@ -198,6 +198,11 @@ export function usePlanOverrides() {
     [update]
   );
 
+  const replaceAll = useCallback((data: OverridesData) => {
+    save(data);
+    setOverrides(data);
+  }, []);
+
   return {
     overrides,
     applyOverrides: (plan: PlanBlock[]) => applyOverrides(plan, overrides),
@@ -207,5 +212,6 @@ export function usePlanOverrides() {
     addTask,
     getNote,
     setNote,
+    replaceAll,
   };
 }
