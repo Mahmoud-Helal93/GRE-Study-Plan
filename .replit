@@ -55,6 +55,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "static"
 run = ["bash", "-c", "PORT=5000 BASE_PATH=/ node artifacts/api-server/dist/index.mjs"]
-build = ["bash", "-c", "pnpm install && PORT=5000 BASE_PATH=/ pnpm --filter @workspace/prepflow run build && pnpm --filter @workspace/api-server run build"]
+build = ["bash", "-c", "pnpm install && PORT=5000 BASE_PATH=/ pnpm --filter @workspace/prepflow run build"]
+publicDir = "artifacts/prepflow/dist/public"
