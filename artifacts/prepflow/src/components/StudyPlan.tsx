@@ -72,9 +72,11 @@ interface HomeViewProps {
   overall: { completed: number; total: number; pct: number };
   completedIds: Set<string>;
   onNavigate: (week: number) => void;
+  onJumpToToday: (() => void) | null;
+  nextBlockTitle: string | null;
 }
 
-function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
+function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockTitle }: HomeViewProps) {
   const weekData = useMemo(() => {
     const rows: { label: string; week: number; done: number; total: number; pct: number }[] = [];
     for (let w = 0; w <= 8; w++) {
@@ -107,9 +109,38 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
       <h1 className="text-[42px] font-bold text-[#1a237e] mb-2 tracking-tight leading-tight">
         GRE Study Plan
       </h1>
-      <p className="text-[17px] text-[#64748b] mb-10">
+      <p className="text-[17px] text-[#64748b] mb-6">
         A clean, organized two-month roadmap for GRE preparation.
       </p>
+
+      {/* Resume / jump to next incomplete day */}
+      {onJumpToToday && overall.pct < 100 && (
+        <div className="mb-8">
+          <button
+            onClick={onJumpToToday}
+            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-[8px] bg-[#1565c0] hover:bg-[#1251a3] text-white text-[15px] font-semibold transition-colors focus:outline-none shadow-sm"
+          >
+            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 8h10M9 4l4 4-4 4" />
+            </svg>
+            {overall.pct === 0 ? "Start the plan" : "Resume where I left off"}
+            {nextBlockTitle && (
+              <span className="text-[13px] font-normal text-blue-200 truncate max-w-[180px]">
+                — {nextBlockTitle}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+
+      {overall.pct === 100 && (
+        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-[8px] bg-emerald-50 border border-emerald-200 text-emerald-700 text-[15px] font-semibold">
+          <svg className="w-4 h-4 shrink-0 text-emerald-500" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M2.5 8l4 4 7-7" />
+          </svg>
+          Full plan complete!
+        </div>
+      )}
 
       {/* Progress summary */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
@@ -453,6 +484,18 @@ export default function StudyPlan() {
     setSearchOpen(false);
   }, []);
 
+  const nextIncompleteBlock = useMemo(() => {
+    return effectivePlan.find((block) => {
+      const required = block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional));
+      return required.length > 0 && required.some((t) => !completedIds.has(t.id));
+    }) ?? null;
+  }, [effectivePlan, completedIds]);
+
+  const handleJumpToToday = useCallback(() => {
+    if (!nextIncompleteBlock) return;
+    handleNavigateTo(nextIncompleteBlock.id);
+  }, [nextIncompleteBlock, handleNavigateTo]);
+
   const pageTitle =
     activeWeek === 0
       ? "Getting Started"
@@ -505,6 +548,22 @@ export default function StudyPlan() {
               </button>
             ))}
           </div>
+
+          {/* Resume button */}
+          {nextIncompleteBlock && overall.pct > 0 && overall.pct < 100 && (
+            <div className="flex items-center shrink-0 ml-3">
+              <button
+                onClick={handleJumpToToday}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] bg-[#1565c0] hover:bg-[#1251a3] text-white text-[13px] font-semibold transition-colors focus:outline-none whitespace-nowrap"
+                title={`Resume: ${nextIncompleteBlock.title}`}
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" />
+                </svg>
+                Resume
+              </button>
+            </div>
+          )}
 
           {/* Export / Import buttons */}
           <div className="flex items-center gap-1 shrink-0 ml-2">
@@ -615,6 +674,8 @@ export default function StudyPlan() {
             overall={overall}
             completedIds={completedIds}
             onNavigate={handleWeekChange}
+            onJumpToToday={nextIncompleteBlock ? handleJumpToToday : null}
+            nextBlockTitle={nextIncompleteBlock?.title ?? null}
           />
 
         ) : (
