@@ -198,56 +198,6 @@ export function usePlanOverrides() {
     [update]
   );
 
-  /* Export overrides as a downloadable JSON file */
-  const exportOverrides = useCallback(() => {
-    const payload = {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      overrides,
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `prepflow-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }, [overrides]);
-
-  /* Import overrides from a JSON file — returns an error string or null */
-  const importOverrides = useCallback(
-    (file: File): Promise<string | null> => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          try {
-            const parsed = JSON.parse(e.target?.result as string);
-            if (!parsed || typeof parsed !== "object") {
-              resolve("Invalid file format.");
-              return;
-            }
-            const data = parsed.version === 1 ? parsed.overrides : parsed;
-            const next: OverridesData = {
-              deletedTaskIds: Array.isArray(data.deletedTaskIds) ? data.deletedTaskIds : [],
-              editedTasks: data.editedTasks && typeof data.editedTasks === "object" ? data.editedTasks : {},
-              sectionOrders: data.sectionOrders && typeof data.sectionOrders === "object" ? data.sectionOrders : {},
-              customTasks: data.customTasks && typeof data.customTasks === "object" ? data.customTasks : {},
-              taskNotes: data.taskNotes && typeof data.taskNotes === "object" ? data.taskNotes : {},
-            };
-            setOverrides(next);
-            save(next);
-            resolve(null);
-          } catch {
-            resolve("Could not read the file. Make sure it's a valid PrepFlow backup.");
-          }
-        };
-        reader.onerror = () => resolve("Failed to read the file.");
-        reader.readAsText(file);
-      });
-    },
-    []
-  );
-
   return {
     overrides,
     applyOverrides: (plan: PlanBlock[]) => applyOverrides(plan, overrides),
@@ -257,7 +207,5 @@ export function usePlanOverrides() {
     addTask,
     getNote,
     setNote,
-    exportOverrides,
-    importOverrides,
   };
 }

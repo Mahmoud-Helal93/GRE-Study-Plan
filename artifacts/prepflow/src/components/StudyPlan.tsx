@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   prepFlowPlan,
   getOverallProgress,
@@ -342,13 +342,7 @@ export default function StudyPlan() {
     addTask,
     getNote,
     setNote,
-    exportOverrides,
-    importOverrides,
   } = usePlanOverrides();
-
-  const importFileRef = useRef<HTMLInputElement>(null);
-  const [importStatus, setImportStatus] = useState<"idle" | "success" | "error">("idle");
-  const [importError, setImportError] = useState<string>("");
 
   const effectivePlan = useMemo(() => applyOverrides(prepFlowPlan), [applyOverrides]);
 
@@ -420,23 +414,6 @@ export default function StudyPlan() {
       localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
-
-  const handleImportFile = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      e.target.value = "";
-      const err = await importOverrides(file);
-      if (err) {
-        setImportError(err);
-        setImportStatus("error");
-      } else {
-        setImportStatus("success");
-      }
-      setTimeout(() => setImportStatus("idle"), 3000);
-    },
-    [importOverrides]
-  );
 
   const handleNavigateTo = useCallback((blockId: string) => {
     const block = effectivePlan.find((b) => b.id === blockId);
@@ -520,76 +497,14 @@ export default function StudyPlan() {
             )}
           </div>
 
-          {/* Export / Import / Reset */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Export */}
-            <button
-              onClick={exportOverrides}
-              title="Export your custom tasks, edits, and notes as a backup file"
-              className="flex items-center gap-1 text-[12px] text-[#64748b] hover:text-[#2f6bff] transition-colors focus:outline-none"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 2v7M4.5 7l2.5 2.5L9.5 7" />
-                <path d="M2 11h10" />
-              </svg>
-              <span className="hidden sm:inline">Export</span>
-            </button>
-
-            {/* Import */}
-            <button
-              onClick={() => importFileRef.current?.click()}
-              title="Import a PrepFlow backup file"
-              className={`flex items-center gap-1 text-[12px] transition-colors focus:outline-none ${
-                importStatus === "success"
-                  ? "text-emerald-600"
-                  : importStatus === "error"
-                  ? "text-red-500"
-                  : "text-[#64748b] hover:text-[#2f6bff]"
-              }`}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 9V2M4.5 4.5L7 2l2.5 2.5" />
-                <path d="M2 11h10" />
-              </svg>
-              <span className="hidden sm:inline">
-                {importStatus === "success" ? "Imported!" : importStatus === "error" ? "Error" : "Import"}
-              </span>
-            </button>
-            <input
-              ref={importFileRef}
-              type="file"
-              accept="application/json,.json"
-              className="hidden"
-              onChange={handleImportFile}
-            />
-
-            {/* Divider */}
-            <span className="text-[#e2e8f0] text-[14px]">|</span>
-
-            {/* Reset */}
-            <button
-              onClick={handleReset}
-              className="text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors focus:outline-none"
-              title="Reset all progress"
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* Import error toast */}
-          {importStatus === "error" && importError && (
-            <div className="absolute top-full left-0 right-0 z-30 px-5 pt-2">
-              <div className="max-w-sm ml-auto bg-red-50 border border-red-200 rounded-[6px] px-3 py-2 flex items-start gap-2 shadow-sm">
-                <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="7" cy="7" r="5" /><path d="M7 4.5v3M7 9.5v.5" />
-                </svg>
-                <p className="text-[13px] text-red-700 flex-1">{importError}</p>
-                <button onClick={() => setImportStatus("idle")} className="text-red-400 hover:text-red-600 focus:outline-none shrink-0">
-                  <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 2l8 8M10 2l-8 8" /></svg>
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Reset */}
+          <button
+            onClick={handleReset}
+            className="shrink-0 text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors"
+            title="Reset all progress"
+          >
+            Reset
+          </button>
         </div>
       </header>
 
