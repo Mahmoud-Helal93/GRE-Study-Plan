@@ -103,7 +103,7 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
   }, [completedIds]);
 
   return (
-    <div className="max-w-[860px]">
+    <div className="max-w-[900px]">
       {/* Title */}
       <h1 className="text-[30px] font-bold text-[#172033] mb-1 tracking-tight">
         GRE Study Plan
@@ -417,7 +417,7 @@ export default function StudyPlan() {
     <div className="min-h-screen bg-white">
       {/* ── Header ─────────────────────────────────────────── */}
       <header className="border-b border-[#e2e8f0] bg-white sticky top-0 z-20">
-        <div className="max-w-[1200px] mx-auto px-5 flex items-center gap-4 py-3">
+        <div className="px-5 flex items-center gap-4 py-3">
           {/* Logo — clicking goes to Home tab */}
           <button
             onClick={() => handleWeekChange(-1)}
@@ -479,7 +479,7 @@ export default function StudyPlan() {
       </header>
 
       {/* ── Main ───────────────────────────────────────────── */}
-      <main className="max-w-[1200px] mx-auto px-5 py-7">
+      <main className="px-5 py-7">
 
         {isSearching ? (
           /* ── Search results ─────────────────────────────── */
