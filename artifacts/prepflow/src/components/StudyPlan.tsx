@@ -45,14 +45,24 @@ const ALL_TABS = [
   { week: 8,  label: "Week 8" },
 ];
 
+/* ── Graduation cap icon ─────────────────────────────────────── */
+function GraduationCapIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+      <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+      <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+    </svg>
+  );
+}
+
 /* ── Chevron icon ────────────────────────────────────────────── */
 function ChevronIcon({ open }: { open: boolean }) {
   return (
     <svg
-      className={`w-4 h-4 text-[#475569] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-      viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"
+      className={`w-[18px] h-[18px] text-[#64748b] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+      viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8"
     >
-      <path d="M4 6l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 7.5l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -62,17 +72,6 @@ interface HomeViewProps {
   overall: { completed: number; total: number; pct: number };
   completedIds: Set<string>;
   onNavigate: (week: number) => void;
-}
-
-function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="border border-[#d1e8f5] rounded-[6px] overflow-hidden mb-5">
-      <div className="bg-[#c7e0f1] px-5 py-2.5">
-        <h2 className="text-[14px] font-semibold text-[#172033]">{title}</h2>
-      </div>
-      <div className="bg-white px-5 py-4">{children}</div>
-    </div>
-  );
 }
 
 function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
@@ -104,89 +103,81 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
   }, [completedIds]);
 
   return (
-    <div className="max-w-[900px]">
-      {/* Title */}
-      <h1 className="text-[30px] font-bold text-[#172033] mb-1 tracking-tight">
+    <div className="max-w-3xl">
+      <h1 className="text-[38px] font-bold text-[#1a237e] mb-2 tracking-tight leading-tight">
         GRE Study Plan
       </h1>
-      <p className="text-[16px] text-[#475569] leading-relaxed mb-7">
+      <p className="text-[16px] text-[#64748b] mb-10">
         A clean, organized two-month roadmap for GRE preparation.
       </p>
 
-      {/* Overview */}
-      <SectionCard title="Welcome">
-        <p className="text-[15px] text-[#334155] leading-[1.85]">
-          This app helps you track the{" "}
-          <span className="font-semibold text-[#172033]">GregMat two-month GRE study plan</span>.
-          Move through <span className="font-medium text-[#172033]">Getting Started</span> to set
-          up materials and accounts, then follow{" "}
-          <span className="font-medium text-[#172033]">Weeks 1–8</span> with structured daily sessions.
-          Each day is broken into <em>Things to Watch</em> (video lessons) and{" "}
-          <em>Things to Do</em> (practice tasks). Use the tabs above to jump to any week.
-        </p>
-      </SectionCard>
-
-      {/* Progress */}
-      <SectionCard title="Study Plan Progress">
-        {/* Overall bar */}
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[14px] font-semibold text-[#172033]">Overall</span>
-            <span className="text-[13px] text-[#475569] tabular-nums">
-              {overall.completed} / {overall.total} tasks · {overall.pct}%
+      {/* Progress summary */}
+      <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
+        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Overall Progress</span>
+        </div>
+        <div className="bg-white px-6 py-5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[15px] font-semibold text-[#1a237e]">
+              {overall.completed} / {overall.total} tasks
             </span>
+            <span className="text-[22px] font-bold text-[#1565c0] tabular-nums">{overall.pct}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-[#e8f1f9] overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-[#e2eaf4] overflow-hidden mb-2">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                overall.pct === 100 ? "bg-emerald-500" : "bg-[#2f6bff]"
-              }`}
+              className={`h-full rounded-full transition-all duration-500 ${overall.pct === 100 ? "bg-emerald-500" : "bg-[#1565c0]"}`}
               style={{ width: `${overall.pct}%` }}
             />
           </div>
           {completedDays > 0 && (
-            <p className="text-[12px] text-[#94a3b8] mt-1.5">
+            <p className="text-[12px] text-[#94a3b8]">
               {completedDays} of {prepFlowPlan.length} days fully completed
             </p>
           )}
         </div>
+      </div>
 
-        {/* Per-week mini bars */}
-        <div className="flex flex-col gap-2.5">
+      {/* Per-week grid */}
+      <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
+        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Weekly Progress</span>
+        </div>
+        <div className="bg-white px-6 py-5 flex flex-col gap-3">
           {weekData.map(({ label, week, done, total, pct }) => (
-            <div key={week} className="flex items-center gap-3">
+            <div key={week} className="flex items-center gap-4">
               <button
                 onClick={() => onNavigate(week)}
-                className="w-32 shrink-0 text-left text-[13px] font-medium text-[#1a6edf] hover:underline"
+                className="w-36 shrink-0 text-left text-[13px] font-medium text-[#1565c0] hover:underline"
               >
                 {label}
               </button>
-              <div className="flex-1 h-1.5 rounded-full bg-[#e8f1f9] overflow-hidden">
+              <div className="flex-1 h-1.5 rounded-full bg-[#e2eaf4] overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    pct === 100 ? "bg-emerald-500" : "bg-[#2f6bff]"
-                  }`}
+                  className={`h-full rounded-full transition-all duration-500 ${pct === 100 ? "bg-emerald-500" : "bg-[#1565c0]"}`}
                   style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-[12px] text-[#94a3b8] tabular-nums w-16 text-right shrink-0">
+              <span className="text-[12px] text-[#94a3b8] tabular-nums w-14 text-right shrink-0">
                 {done}/{total}
               </span>
             </div>
           ))}
         </div>
-      </SectionCard>
+      </div>
 
-      {/* Quick Navigation */}
-      <SectionCard title="Quick Navigation">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      {/* Quick nav */}
+      <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden">
+        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+          <span className="text-[13px] font-semibold text-[#334155] uppercase tracking-wide">Quick Navigation</span>
+        </div>
+        <div className="bg-white px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
           {weekData.map(({ label, week, pct }) => (
             <button
               key={week}
               onClick={() => onNavigate(week)}
-              className="flex items-center gap-3 text-left px-4 py-2.5 rounded-[4px] border border-[#e2e8f0] hover:border-[#9bc4e0] hover:bg-[#f4fafd] transition-colors group"
+              className="flex items-center gap-3 text-left px-4 py-2.5 rounded-[6px] border border-[#e2eaf4] hover:border-[#93b8de] hover:bg-[#f4f8fd] transition-colors group"
             >
-              <span className="text-[14px] font-medium text-[#172033] group-hover:text-[#2f6bff] transition-colors flex-1 min-w-0">
+              <span className="text-[14px] font-medium text-[#1a237e] group-hover:text-[#1565c0] transition-colors flex-1 min-w-0">
                 {label}
               </span>
               {pct === 100 ? (
@@ -194,38 +185,16 @@ function HomeView({ overall, completedIds, onNavigate }: HomeViewProps) {
                   <path d="M3 8l4 4 6-6" />
                 </svg>
               ) : pct > 0 ? (
-                <span className="text-[12px] font-medium text-[#2f6bff] tabular-nums shrink-0">{pct}%</span>
+                <span className="text-[12px] font-medium text-[#1565c0] tabular-nums shrink-0">{pct}%</span>
               ) : (
-                <svg className="w-4 h-4 text-[#cbd5e1] group-hover:text-[#2f6bff] shrink-0 transition-colors" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className="w-4 h-4 text-[#c4d2e4] group-hover:text-[#1565c0] shrink-0 transition-colors" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M6 12l4-4-4-4" />
                 </svg>
               )}
             </button>
           ))}
         </div>
-      </SectionCard>
-
-      {/* How to Use */}
-      <SectionCard title="How to Use This Plan">
-        <ul className="flex flex-col gap-2.5">
-          {[
-            "Select a week tab above, then click any day row to expand it.",
-            "Complete each day's Things to Watch (videos) and Things to Do (practice tasks).",
-            "Check off individual tasks as you finish them — progress saves automatically.",
-            "Click any blue link to open the study resource in a new tab.",
-            "Use the Done button on an accordion row to mark the entire day complete at once.",
-            "Use the filter chips (Quant, Verbal, Writing, etc.) to focus on a specific subject.",
-            "Review your progress on this Home page at any time.",
-          ].map((tip, i) => (
-            <li key={i} className="flex items-start gap-3">
-              <svg className="w-4 h-4 text-[#1a6edf] mt-[3px] shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 8l4 4 6-6" />
-              </svg>
-              <span className="text-[15px] text-[#334155] leading-[1.75]">{tip}</span>
-            </li>
-          ))}
-        </ul>
-      </SectionCard>
+      </div>
     </div>
   );
 }
@@ -242,11 +211,12 @@ interface DayRowProps {
   activeFilter: TaskFilter;
   taskActions: TaskActions;
   plan: PlanBlock[];
+  isLast: boolean;
 }
 
 function DayRow({
   block, isExpanded, completedIds,
-  onToggle, onToggleTask, onBulkToggle, onNavigateTo, activeFilter, taskActions, plan,
+  onToggle, onToggleTask, onBulkToggle, onNavigateTo, activeFilter, taskActions, plan, isLast,
 }: DayRowProps) {
   const required = useMemo(
     () => block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional)),
@@ -256,56 +226,46 @@ function DayRow({
   const allDone = required.length > 0 && done === required.length;
 
   return (
-    <div className="rounded-[4px] overflow-hidden">
+    <div className={!isLast ? "border-b border-[#d9e4f0]" : ""}>
       {/* Accordion header */}
-      <div className="flex items-center bg-[#c7e0f1] px-4 py-[11px] gap-3">
-        <button
-          className="flex-1 text-left focus:outline-none min-w-0"
-          onClick={() => onToggle(block.id)}
-        >
-          <span className="text-[15px] font-semibold text-[#172033] leading-snug">
-            {block.title}
-          </span>
-        </button>
+      <div
+        className={`flex items-center px-5 py-3.5 gap-4 transition-colors cursor-pointer select-none ${
+          isExpanded ? "bg-[#e2eaf4]" : "bg-[#eef4fb] hover:bg-[#e7f0f9]"
+        }`}
+        onClick={() => onToggle(block.id)}
+      >
+        <span className="flex-1 text-[14.5px] font-medium text-[#1e2d4d] leading-snug min-w-0">
+          {block.title}
+        </span>
 
         {/* Done toggle */}
         <button
           onClick={(e) => { e.stopPropagation(); onBulkToggle(block); }}
-          className="flex items-center gap-1.5 shrink-0 focus:outline-none group"
+          className="flex items-center gap-2 shrink-0 focus:outline-none"
           title={allDone ? "Mark all incomplete" : "Mark all as done"}
         >
           <div
-            className="w-[14px] h-[14px] border flex items-center justify-center shrink-0 transition-colors"
+            className="w-[15px] h-[15px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors rounded-[2px]"
             style={{
-              borderRadius: 2,
-              background: allDone ? "#2f6bff" : "white",
-              borderColor: allDone ? "#2f6bff" : "#64748b",
+              background: allDone ? "#1565c0" : "white",
+              borderColor: allDone ? "#1565c0" : "#94a3b8",
             }}
           >
             {allDone && (
               <svg className="w-[9px] h-[9px] text-white" viewBox="0 0 9 9" fill="none">
-                <path d="M1.5 4.5L3.5 6.5L7.5 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1.5 4.5L3.5 6.5L7.5 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             )}
           </div>
-          <span className="text-[14px] font-medium text-[#334155] group-hover:text-[#172033] transition-colors">
-            Done
-          </span>
+          <span className="text-[13.5px] text-[#475569]">Done</span>
         </button>
 
-        {/* Chevron */}
-        <button
-          onClick={() => onToggle(block.id)}
-          className="shrink-0 focus:outline-none"
-          aria-label={isExpanded ? "Collapse" : "Expand"}
-        >
-          <ChevronIcon open={isExpanded} />
-        </button>
+        <ChevronIcon open={isExpanded} />
       </div>
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="bg-white">
+        <div className="bg-white border-t border-[#e2eaf4]">
           <TaskArea
             block={block}
             plan={plan}
@@ -327,13 +287,14 @@ export default function StudyPlan() {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>(
     () => loadFromStorage()
   );
-  // -1 = Home tab
   const [activeWeek, setActiveWeek] = useState<number>(-1);
   const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<TaskFilter>("All");
+  const [showFilters, setShowFilters] = useState(false);
 
-  /* ── Plan overrides (edit / delete / reorder / add / notes) ── */
+  /* ── Plan overrides ─────────────────────────────────────────── */
   const {
     applyOverrides,
     deleteTask,
@@ -392,7 +353,6 @@ export default function StudyPlan() {
 
   const handleBulkToggle = useCallback(
     (block: PlanBlock) => {
-      // Use the block as passed (already has overrides applied)
       const required = block.sections.flatMap((s) => s.tasks.filter((t) => !t.optional));
       const allDone = required.every((t) => completedIds.has(t.id));
       setCompletedTasks((prev) => {
@@ -421,9 +381,10 @@ export default function StudyPlan() {
     setActiveWeek(block.week);
     setExpandedBlockId(blockId);
     setSearchQuery("");
+    setSearchOpen(false);
     setActiveFilter("All");
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  }, [effectivePlan]);
 
   const toggleExpand = useCallback((blockId: string) => {
     setExpandedBlockId((prev) => (prev === blockId ? null : blockId));
@@ -432,97 +393,127 @@ export default function StudyPlan() {
   const handleWeekChange = useCallback((week: number) => {
     setActiveWeek(week);
     setExpandedBlockId(null);
+    setShowFilters(false);
   }, []);
 
-  const weekTitle =
+  const handleSearchClose = useCallback(() => {
+    setSearchQuery("");
+    setSearchOpen(false);
+  }, []);
+
+  const pageTitle =
     activeWeek === 0
       ? "Getting Started"
       : activeWeek > 0
       ? `Week ${activeWeek} of The Two-Month Study Plan`
       : "";
 
+  const pageSubtitle =
+    activeWeek === 0
+      ? "Set up your materials and accounts before diving in."
+      : activeWeek > 0
+      ? "Track your daily GRE tasks and mark each day complete as you progress."
+      : "";
+
   const isHomePage = activeWeek === -1 && !isSearching;
 
   return (
     <div className="min-h-screen bg-white">
-      {/* ── Header ─────────────────────────────────────────── */}
-      <header className="border-b border-[#e2e8f0] bg-white sticky top-0 z-20">
-        <div className="px-5 flex items-center gap-4 py-3">
-          {/* Logo — clicking goes to Home tab */}
+
+      {/* ── Header ───────────────────────────────────────────── */}
+      <header className="border-b border-[#d9e4f0] bg-white sticky top-0 z-20">
+        <div className="max-w-5xl mx-auto px-6 flex items-stretch h-14 gap-0">
+
+          {/* Logo */}
           <button
             onClick={() => handleWeekChange(-1)}
-            className="text-[16px] font-bold text-[#172033] hover:text-[#2f6bff] transition-colors shrink-0 mr-1 focus:outline-none"
+            className="flex items-center gap-2.5 shrink-0 mr-8 focus:outline-none group"
           >
-            PrepFlow
+            <div className="w-8 h-8 rounded-[6px] bg-[#1a237e] flex items-center justify-center text-white shrink-0">
+              <GraduationCapIcon />
+            </div>
+            <span className="text-[15px] font-bold text-[#1a237e] whitespace-nowrap group-hover:text-[#1565c0] transition-colors">
+              GRE Study Plan
+            </span>
           </button>
 
-          {/* Overall progress bar */}
-          <div className="hidden sm:flex items-center gap-2 text-[13px] text-[#64748b] shrink-0">
-            <div className="h-1.5 w-20 rounded-full bg-[#e8f1f9] overflow-hidden">
-              <div
-                className="h-full rounded-full bg-[#2f6bff] transition-all duration-500"
-                style={{ width: `${overall.pct}%` }}
-              />
-            </div>
-            <span className="tabular-nums font-medium">{overall.pct}%</span>
+          {/* Nav tabs — fill remaining space, scrollable */}
+          <div className="flex-1 flex items-stretch overflow-x-auto scrollbar-none">
+            {ALL_TABS.map(({ week, label }) => (
+              <button
+                key={week}
+                onClick={() => handleWeekChange(week)}
+                className={`px-4 text-[14px] whitespace-nowrap border-b-2 transition-colors focus:outline-none font-medium ${
+                  activeWeek === week && !isSearching
+                    ? "text-[#1565c0] border-[#1565c0]"
+                    : "text-[#64748b] border-transparent hover:text-[#334155]"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
-          {/* Search */}
-          <div className="relative flex-1 max-w-xs ml-auto sm:ml-0">
-            <svg
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94a3b8] pointer-events-none"
-              fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.8"
-              strokeLinecap="round" strokeLinejoin="round"
-            >
-              <circle cx="7" cy="7" r="5" />
-              <path d="M11 11l3 3" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search tasks…"
-              className="w-full pl-8 pr-7 py-1.5 text-[14px] border border-[#e2e8f0] rounded-md bg-white text-[#172033] placeholder-[#94a3b8] focus:outline-none focus:border-[#2f6bff] transition-colors"
-            />
-            {searchQuery && (
+          {/* Search icon / input */}
+          <div className="flex items-center gap-2 shrink-0 ml-2">
+            {searchOpen ? (
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <svg
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94a3b8] pointer-events-none"
+                    fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.8"
+                    strokeLinecap="round" strokeLinejoin="round"
+                  >
+                    <circle cx="7" cy="7" r="5" />
+                    <path d="M11 11l3 3" />
+                  </svg>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search tasks…"
+                    className="w-48 pl-8 pr-3 py-1.5 text-[13px] border border-[#d9e4f0] rounded-[6px] bg-white text-[#1a237e] placeholder-[#94a3b8] focus:outline-none focus:border-[#1565c0] transition-colors"
+                  />
+                </div>
+                <button
+                  onClick={handleSearchClose}
+                  className="text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors focus:outline-none"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center text-[#94a3b8] hover:text-[#475569] transition-colors"
-                aria-label="Clear search"
+                onClick={() => setSearchOpen(true)}
+                className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+                aria-label="Search"
               >
-                <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M2 2l8 8M10 2l-8 8" />
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="10.5" cy="10.5" r="6.5" />
+                  <path d="M15.5 15.5L21 21" />
                 </svg>
               </button>
             )}
           </div>
-
-          {/* Reset */}
-          <button
-            onClick={handleReset}
-            className="shrink-0 text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors"
-            title="Reset all progress"
-          >
-            Reset
-          </button>
         </div>
       </header>
 
-      {/* ── Main ───────────────────────────────────────────── */}
-      <main className="px-5 py-7">
+      {/* ── Main ─────────────────────────────────────────────── */}
+      <main className="max-w-5xl mx-auto px-6 py-10">
 
         {isSearching ? (
-          /* ── Search results ─────────────────────────────── */
+          /* ── Search results ──────────────────────────────── */
           <div>
-            <div className="flex items-center justify-between mb-5">
-              <p className="text-[15px] text-[#172033] font-semibold">
-                Search results for "{searchQuery}"
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-[16px] font-semibold text-[#1a237e]">
+                Results for "{searchQuery}"
               </p>
               <button
-                onClick={() => setSearchQuery("")}
-                className="text-[13px] text-[#1a6edf] hover:underline"
+                onClick={handleSearchClose}
+                className="text-[13px] text-[#1565c0] hover:underline"
               >
-                Clear search
+                Clear
               </button>
             </div>
             <SearchResults
@@ -532,85 +523,95 @@ export default function StudyPlan() {
               query={searchQuery}
             />
           </div>
-        ) : (
-          <>
-            {/* ── Page title (only on week tabs, not Home) ── */}
-            {!isHomePage && (
-              <h1 className="text-[28px] font-bold text-[#172033] mb-5 tracking-tight">
-                {weekTitle}
-              </h1>
-            )}
 
-            {/* ── Tabs: Home | Getting Started | Week 1–8 ── */}
-            <div className="border-b border-[#e2e8f0] mb-5 overflow-x-auto">
-              <div className="flex gap-0 min-w-max">
-                {ALL_TABS.map(({ week, label }) => (
+        ) : isHomePage ? (
+          /* ── Home page ───────────────────────────────────── */
+          <HomeView
+            overall={overall}
+            completedIds={completedIds}
+            onNavigate={handleWeekChange}
+          />
+
+        ) : (
+          /* ── Week / Getting Started view ─────────────────── */
+          <>
+            {/* Page title */}
+            <div className="mb-8">
+              <h1 className="text-[36px] font-bold text-[#1a237e] leading-tight tracking-tight">
+                {pageTitle}
+              </h1>
+              <p className="text-[15px] text-[#64748b] mt-2">{pageSubtitle}</p>
+            </div>
+
+            {/* Filter toggle */}
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={() => setShowFilters((v) => !v)}
+                className="text-[13px] text-[#64748b] hover:text-[#334155] flex items-center gap-1.5 transition-colors focus:outline-none"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 4h12M4 8h8M6 12h4" />
+                </svg>
+                {showFilters ? "Hide filters" : "Filter"}
+                {activeFilter !== "All" && (
+                  <span className="ml-1 px-1.5 py-0.5 text-[11px] font-medium bg-[#1565c0] text-white rounded-full leading-none">
+                    {activeFilter}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={handleReset}
+                className="text-[12px] text-[#94a3b8] hover:text-[#475569] transition-colors focus:outline-none"
+                title="Reset all progress"
+              >
+                Reset progress
+              </button>
+            </div>
+
+            {/* Filter chips */}
+            {showFilters && (
+              <div className="flex gap-1.5 flex-wrap mb-5">
+                {FILTER_OPTIONS.map((filter) => (
                   <button
-                    key={week}
-                    onClick={() => handleWeekChange(week)}
-                    className={`px-4 pb-3 pt-0.5 text-[15px] whitespace-nowrap transition-colors border-b-2 font-medium ${
-                      activeWeek === week
-                        ? "text-[#2f6bff] border-[#2f6bff]"
-                        : "text-[#64748b] border-transparent hover:text-[#334155] hover:border-[#d1e8f5]"
+                    key={filter}
+                    onClick={() => setActiveFilter(filter)}
+                    className={`px-3 py-[5px] text-[13px] font-medium rounded-full border transition-colors focus:outline-none ${
+                      activeFilter === filter
+                        ? "bg-[#1565c0] text-white border-[#1565c0]"
+                        : "text-[#64748b] border-[#d9e4f0] hover:border-[#93b8de] hover:text-[#334155] bg-white"
                     }`}
                   >
-                    {label}
+                    {filter}
                   </button>
                 ))}
               </div>
-            </div>
+            )}
 
-            {/* ── Home page content ─────────────────────── */}
-            {isHomePage ? (
-              <HomeView
-                overall={overall}
-                completedIds={completedIds}
-                onNavigate={handleWeekChange}
-              />
+            {/* Accordion card */}
+            {currentBlocks.length === 0 ? (
+              <div className="text-center py-16 text-[#94a3b8] text-[15px]">
+                No content for this week.
+              </div>
             ) : (
-              <>
-                {/* ── Filter chips ──────────────────────── */}
-                <div className="flex gap-1.5 flex-wrap mb-5">
-                  {FILTER_OPTIONS.map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setActiveFilter(filter)}
-                      className={`px-3 py-[5px] text-[13px] font-medium rounded-full border transition-colors ${
-                        activeFilter === filter
-                          ? "bg-[#2f6bff] text-white border-[#2f6bff]"
-                          : "text-[#64748b] border-[#e2e8f0] hover:border-[#94a3b8] hover:text-[#334155] bg-white"
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
-
-                {/* ── Accordion list ────────────────────── */}
-                {currentBlocks.length === 0 ? (
-                  <div className="text-center py-16 text-[#94a3b8] text-[15px]">
-                    No content for this week.
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-[3px]">
-                    {currentBlocks.map((block) => (
-                      <DayRow
-                        key={block.id}
-                        block={block}
-                        isExpanded={expandedBlockId === block.id}
-                        completedIds={completedIds}
-                        onToggle={toggleExpand}
-                        onToggleTask={handleToggleTask}
-                        onBulkToggle={handleBulkToggle}
-                        onNavigateTo={handleNavigateTo}
-                        activeFilter={activeFilter}
-                        taskActions={taskActions}
-                        plan={effectivePlan}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
+              <div className="border border-[#d9e4f0] rounded-[10px] overflow-hidden">
+                {currentBlocks.map((block, idx) => (
+                  <DayRow
+                    key={block.id}
+                    block={block}
+                    isExpanded={expandedBlockId === block.id}
+                    completedIds={completedIds}
+                    onToggle={toggleExpand}
+                    onToggleTask={handleToggleTask}
+                    onBulkToggle={handleBulkToggle}
+                    onNavigateTo={handleNavigateTo}
+                    activeFilter={activeFilter}
+                    taskActions={taskActions}
+                    plan={effectivePlan}
+                    isLast={idx === currentBlocks.length - 1}
+                  />
+                ))}
+              </div>
             )}
           </>
         )}
