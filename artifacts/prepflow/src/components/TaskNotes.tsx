@@ -62,7 +62,7 @@ export default function TaskNotes({ note, onSave }: TaskNotesProps) {
 
   return (
     <div className="mt-2 ml-[23px] border border-[#e2e8f0] rounded-[6px] bg-[#f8fafc] overflow-hidden">
-      <div className="px-3 py-2 border-b border-[#e8f1f9] bg-white flex items-center gap-2">
+      <div className="px-3 py-2 border-b border-[#eaf5fc] bg-white flex items-center gap-2">
         <svg className="w-3.5 h-3.5 text-[#64748b]" fill="none" viewBox="0 0 16 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 3h10M3 6.5h10M3 10h6" />
         </svg>
@@ -75,7 +75,7 @@ export default function TaskNotes({ note, onSave }: TaskNotesProps) {
           value={text}
           onChange={(e) => handleTextChange(e.target.value)}
           placeholder="Add notes for this task…"
-          className="w-full text-[14px] text-[#334155] placeholder-[#94a3b8] resize-none bg-white border border-[#e2e8f0] rounded-[4px] px-3 py-2 focus:outline-none focus:border-[#2f6bff] transition-colors leading-relaxed"
+          className="w-full text-[14px] text-[#334155] placeholder-[#94a3b8] resize-none bg-white border border-[#e2e8f0] rounded-[4px] px-3 py-2 focus:outline-none focus:border-[#0066ff] transition-colors leading-relaxed"
           rows={3}
         />
 
@@ -110,7 +110,7 @@ export default function TaskNotes({ note, onSave }: TaskNotesProps) {
           onDragLeave={handleDragLeave}
           className={`mt-2 border-2 border-dashed rounded-[4px] px-3 py-2 flex items-center gap-2 cursor-pointer transition-colors ${
             isDragging
-              ? "border-[#2f6bff] bg-[#eff4ff]"
+              ? "border-[#0066ff] bg-[#e5f2ff]"
               : "border-[#d1d9e0] hover:border-[#94a3b8] bg-white"
           }`}
           onClick={() => fileInputRef.current?.click()}
@@ -140,8 +140,8 @@ export default function TaskNotes({ note, onSave }: TaskNotesProps) {
             disabled={!isDirty}
             className={`text-[13px] font-medium px-3 py-1.5 rounded-[4px] transition-colors focus:outline-none ${
               isDirty
-                ? "bg-[#2f6bff] text-white hover:bg-[#2560ee]"
-                : "bg-[#e8f1f9] text-[#94a3b8] cursor-default"
+                ? "bg-[#0066ff] text-white hover:bg-[#004ecc]"
+                : "bg-[#eaf5fc] text-[#94a3b8] cursor-default"
             }`}
           >
             Save notes

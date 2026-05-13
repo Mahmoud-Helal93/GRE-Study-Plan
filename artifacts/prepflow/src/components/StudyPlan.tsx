@@ -106,7 +106,7 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
 
   return (
     <div className="w-full">
-      <h1 className="text-[42px] font-bold text-[#1a237e] mb-2 tracking-tight leading-tight">
+      <h1 className="text-[42px] font-bold text-[#0f1f3d] mb-2 tracking-tight leading-tight">
         GRE Study Plan
       </h1>
       <p className="text-[17px] text-[#64748b] mb-6">
@@ -144,17 +144,17 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
 
       {/* Progress summary */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
-        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+        <div className="bg-[#eaf5fc] px-6 py-3 border-b border-[#d9e4f0]">
           <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Overall Progress</span>
         </div>
         <div className="bg-white px-6 py-5">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[16px] font-semibold text-[#1a237e]">
+            <span className="text-[16px] font-semibold text-[#0f1f3d]">
               {overall.completed} / {overall.total} tasks
             </span>
             <span className="text-[24px] font-bold text-[#1565c0] tabular-nums">{overall.pct}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-[#e2eaf4] overflow-hidden mb-2">
+          <div className="h-2 w-full rounded-full bg-[#c7e0f1] overflow-hidden mb-2">
             <div
               className={`h-full rounded-full transition-all duration-500 ${overall.pct === 100 ? "bg-emerald-500" : "bg-[#1565c0]"}`}
               style={{ width: `${overall.pct}%` }}
@@ -170,7 +170,7 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
 
       {/* Per-week grid */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden mb-6">
-        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+        <div className="bg-[#eaf5fc] px-6 py-3 border-b border-[#d9e4f0]">
           <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Weekly Progress</span>
         </div>
         <div className="bg-white px-6 py-5 flex flex-col gap-3">
@@ -182,7 +182,7 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
               >
                 {label}
               </button>
-              <div className="flex-1 h-1.5 rounded-full bg-[#e2eaf4] overflow-hidden">
+              <div className="flex-1 h-1.5 rounded-full bg-[#c7e0f1] overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-500 ${pct === 100 ? "bg-emerald-500" : "bg-[#1565c0]"}`}
                   style={{ width: `${pct}%` }}
@@ -198,7 +198,7 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
 
       {/* Quick nav */}
       <div className="border border-[#d9e4f0] rounded-[8px] overflow-hidden">
-        <div className="bg-[#eef4fb] px-6 py-3 border-b border-[#d9e4f0]">
+        <div className="bg-[#eaf5fc] px-6 py-3 border-b border-[#d9e4f0]">
           <span className="text-[14px] font-semibold text-[#334155] uppercase tracking-wide">Quick Navigation</span>
         </div>
         <div className="bg-white px-6 py-5 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -206,9 +206,9 @@ function HomeView({ overall, completedIds, onNavigate, onJumpToToday, nextBlockT
             <button
               key={week}
               onClick={() => onNavigate(week)}
-              className="flex items-center gap-3 text-left px-4 py-2.5 rounded-[6px] border border-[#e2eaf4] hover:border-[#93b8de] hover:bg-[#f4f8fd] transition-colors group"
+              className="flex items-center gap-3 text-left px-4 py-2.5 rounded-[6px] border border-[#c7e0f1] hover:border-[#93b8de] hover:bg-[#eaf5fc] transition-colors group"
             >
-              <span className="text-[15px] font-medium text-[#1a237e] group-hover:text-[#1565c0] transition-colors flex-1 min-w-0">
+              <span className="text-[15px] font-medium text-[#0f1f3d] group-hover:text-[#1565c0] transition-colors flex-1 min-w-0">
                 {label}
               </span>
               {pct === 100 ? (
@@ -261,11 +261,11 @@ function DayRow({
       {/* Accordion header */}
       <div
         className={`flex items-center px-5 py-3.5 gap-4 transition-colors cursor-pointer select-none ${
-          isExpanded ? "bg-[#e2eaf4]" : "bg-[#eef4fb] hover:bg-[#e7f0f9]"
+          isExpanded ? "bg-[#c7e0f1]" : "bg-[#eaf5fc] hover:bg-[#c7e0f1]"
         }`}
         onClick={() => onToggle(block.id)}
       >
-        <span className="flex-1 text-[16px] font-medium text-[#1e2d4d] leading-snug min-w-0">
+        <span className="flex-1 text-[16px] font-medium text-[#0f1f3d] leading-snug min-w-0">
           {block.title}
         </span>
 
@@ -296,7 +296,7 @@ function DayRow({
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="bg-white border-t border-[#e2eaf4]">
+        <div className="bg-white border-t border-[#c7e0f1]">
           <TaskArea
             block={block}
             plan={plan}
@@ -524,10 +524,10 @@ export default function StudyPlan() {
             onClick={() => handleWeekChange(-1)}
             className="flex items-center gap-2.5 shrink-0 mr-8 focus:outline-none group"
           >
-            <div className="w-8 h-8 rounded-[6px] bg-[#1a237e] flex items-center justify-center text-white shrink-0">
+            <div className="w-8 h-8 rounded-[6px] bg-[#0f1f3d] flex items-center justify-center text-white shrink-0">
               <GraduationCapIcon />
             </div>
-            <span className="text-[16px] font-bold text-[#1a237e] whitespace-nowrap group-hover:text-[#1565c0] transition-colors">
+            <span className="text-[16px] font-bold text-[#0f1f3d] whitespace-nowrap group-hover:text-[#1565c0] transition-colors">
               GRE Study Plan
             </span>
           </button>
@@ -576,7 +576,7 @@ export default function StudyPlan() {
             />
             <button
               onClick={handleExport}
-              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#0f1f3d] transition-colors focus:outline-none"
               aria-label="Export progress"
               title="Export progress"
             >
@@ -587,7 +587,7 @@ export default function StudyPlan() {
             </button>
             <button
               onClick={() => importInputRef.current?.click()}
-              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+              className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#0f1f3d] transition-colors focus:outline-none"
               aria-label="Import progress"
               title="Import progress"
             >
@@ -617,7 +617,7 @@ export default function StudyPlan() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search tasks…"
-                    className="w-48 pl-8 pr-3 py-1.5 text-[13px] border border-[#d9e4f0] rounded-[6px] bg-white text-[#1a237e] placeholder-[#94a3b8] focus:outline-none focus:border-[#1565c0] transition-colors"
+                    className="w-48 pl-8 pr-3 py-1.5 text-[13px] border border-[#d9e4f0] rounded-[6px] bg-white text-[#0f1f3d] placeholder-[#94a3b8] focus:outline-none focus:border-[#1565c0] transition-colors"
                   />
                 </div>
                 <button
@@ -630,7 +630,7 @@ export default function StudyPlan() {
             ) : (
               <button
                 onClick={() => setSearchOpen(true)}
-                className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#1a237e] transition-colors focus:outline-none"
+                className="w-8 h-8 flex items-center justify-center text-[#64748b] hover:text-[#0f1f3d] transition-colors focus:outline-none"
                 aria-label="Search"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -650,7 +650,7 @@ export default function StudyPlan() {
           /* ── Search results ──────────────────────────────── */
           <div>
             <div className="flex items-center justify-between mb-6">
-              <p className="text-[16px] font-semibold text-[#1a237e]">
+              <p className="text-[16px] font-semibold text-[#0f1f3d]">
                 Results for "{searchQuery}"
               </p>
               <button
@@ -683,7 +683,7 @@ export default function StudyPlan() {
           <>
             {/* Page title */}
             <div className="mb-8">
-              <h1 className="text-[40px] font-bold text-[#1a237e] leading-tight tracking-tight">
+              <h1 className="text-[40px] font-bold text-[#0f1f3d] leading-tight tracking-tight">
                 {pageTitle}
               </h1>
               <p className="text-[16px] text-[#64748b] mt-2">{pageSubtitle}</p>

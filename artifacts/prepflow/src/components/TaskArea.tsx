@@ -41,7 +41,7 @@ function DeleteConfirmDialog({ taskTitle, onConfirm, onCancel }: DeleteConfirmDi
             </svg>
           </div>
           <div>
-            <p className="text-[15px] font-semibold text-[#172033]">Delete this task?</p>
+            <p className="text-[15px] font-semibold text-[#0f1f3d]">Delete this task?</p>
             <p className="text-[13px] text-[#64748b] mt-1 leading-relaxed line-clamp-2">
               "{taskTitle}"
             </p>
@@ -72,11 +72,11 @@ function AcademicCheckbox({ checked, onToggle }: { checked: boolean; onToggle: (
   return (
     <button
       onClick={onToggle}
-      className="shrink-0 mt-[3px] w-[15px] h-[15px] flex items-center justify-center transition-colors border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2f6bff]"
+      className="shrink-0 mt-[3px] w-[15px] h-[15px] flex items-center justify-center transition-colors border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0066ff]"
       style={{
         borderRadius: 2,
-        background: checked ? "#2f6bff" : "white",
-        borderColor: checked ? "#2f6bff" : "#94a3b8",
+        background: checked ? "#0066ff" : "white",
+        borderColor: checked ? "#0066ff" : "#94a3b8",
       }}
       aria-label={checked ? "Mark incomplete" : "Mark complete"}
     >
@@ -152,7 +152,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
       )}
 
       <div
-        className="flex items-start gap-2.5 py-1.5 group/row rounded-[3px] -mx-1 px-1 transition-colors hover:bg-[#f4f8fb]"
+        className="flex items-start gap-2.5 py-1.5 group/row rounded-[3px] -mx-1 px-1 transition-colors hover:bg-[#eaf5fc]"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -168,11 +168,11 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 onChange={(e) => setEditValue(e.target.value)}
                 onKeyDown={handleEditKeyDown}
                 onBlur={handleEditSave}
-                className="flex-1 text-[16px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-0.5 focus:outline-none bg-white"
+                className="flex-1 text-[16px] text-[#0f1f3d] border border-[#0066ff] rounded-[3px] px-2 py-0.5 focus:outline-none bg-white"
               />
               <button
                 onMouseDown={(e) => { e.preventDefault(); handleEditSave(); }}
-                className="text-[12px] font-medium text-white bg-[#2f6bff] px-2 py-0.5 rounded-[3px] shrink-0 hover:bg-[#2560ee]"
+                className="text-[12px] font-medium text-white bg-[#0066ff] px-2 py-0.5 rounded-[3px] shrink-0 hover:bg-[#004ecc]"
               >
                 Save
               </button>
@@ -191,7 +191,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className={`text-[16px] leading-[1.8] break-words ${
-                  completed ? "line-through text-[#94a3b8]" : "text-[#1a6edf] hover:underline"
+                  completed ? "line-through text-[#94a3b8]" : "text-[#0066ff] hover:underline"
                 }`}
               >
                 {task.title}
@@ -205,7 +205,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
               <button onClick={() => onToggle(task.id)} className="w-full text-left focus:outline-none">
                 <span
                   className={`text-[16px] leading-[1.8] break-words ${
-                    completed ? "line-through text-[#94a3b8]" : "text-[#172033]"
+                    completed ? "line-through text-[#94a3b8]" : "text-[#0f1f3d]"
                   }`}
                 >
                   {task.title}
@@ -223,7 +223,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[16px] text-[#1a6edf] hover:underline leading-[1.8] break-words"
+                      className="text-[16px] text-[#0066ff] hover:underline leading-[1.8] break-words"
                     >
                       {link.text || link.url}
                     </a>
@@ -249,7 +249,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
               className={`w-6 h-6 flex items-center justify-center rounded-[3px] transition-colors focus:outline-none ${
                 isFirst
                   ? "text-[#d1d9e0] cursor-default"
-                  : "text-[#64748b] hover:text-[#172033] hover:bg-[#e8f1f9]"
+                  : "text-[#64748b] hover:text-[#0f1f3d] hover:bg-[#eaf5fc]"
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -265,7 +265,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
               className={`w-6 h-6 flex items-center justify-center rounded-[3px] transition-colors focus:outline-none ${
                 isLast
                   ? "text-[#d1d9e0] cursor-default"
-                  : "text-[#64748b] hover:text-[#172033] hover:bg-[#e8f1f9]"
+                  : "text-[#64748b] hover:text-[#0f1f3d] hover:bg-[#eaf5fc]"
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -277,7 +277,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
             <button
               onClick={() => setIsEditing(true)}
               title="Edit task"
-              className="w-6 h-6 flex items-center justify-center rounded-[3px] text-[#64748b] hover:text-[#172033] hover:bg-[#e8f1f9] transition-colors focus:outline-none"
+              className="w-6 h-6 flex items-center justify-center rounded-[3px] text-[#64748b] hover:text-[#0f1f3d] hover:bg-[#eaf5fc] transition-colors focus:outline-none"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9.5 2.5l2 2L4 12H2v-2L9.5 2.5z" />
@@ -290,8 +290,8 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
               title={showNotes ? "Hide notes" : "Add/view notes"}
               className={`w-6 h-6 flex items-center justify-center rounded-[3px] transition-colors focus:outline-none relative ${
                 showNotes || hasNote
-                  ? "text-[#2f6bff] bg-[#eff4ff] hover:bg-[#e0ebff]"
-                  : "text-[#64748b] hover:text-[#172033] hover:bg-[#e8f1f9]"
+                  ? "text-[#0066ff] bg-[#e5f2ff] hover:bg-[#cce0ff]"
+                  : "text-[#64748b] hover:text-[#0f1f3d] hover:bg-[#eaf5fc]"
               }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -299,7 +299,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 <path d="M4 5h6M4 7.5h4" />
               </svg>
               {hasNote && !showNotes && (
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#2f6bff]" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-[#0066ff]" />
               )}
             </button>
 
@@ -364,7 +364,7 @@ function AddTaskRow({ blockId, sectionIdx, taskActions, defaultType = "other" }:
     return (
       <button
         onClick={handleOpen}
-        className="flex items-center gap-1.5 mt-1.5 text-[14px] text-[#94a3b8] hover:text-[#2f6bff] transition-colors focus:outline-none group"
+        className="flex items-center gap-1.5 mt-1.5 text-[14px] text-[#94a3b8] hover:text-[#0066ff] transition-colors focus:outline-none group"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 14 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <path d="M7 2v10M2 7h10" />
@@ -382,11 +382,11 @@ function AddTaskRow({ blockId, sectionIdx, taskActions, defaultType = "other" }:
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="New task title…"
-        className="flex-1 text-[15px] text-[#172033] border border-[#2f6bff] rounded-[3px] px-2 py-1 focus:outline-none bg-white placeholder-[#94a3b8]"
+        className="flex-1 text-[15px] text-[#0f1f3d] border border-[#0066ff] rounded-[3px] px-2 py-1 focus:outline-none bg-white placeholder-[#94a3b8]"
       />
       <button
         onClick={handleAdd}
-        className="text-[13px] font-medium text-white bg-[#2f6bff] px-3 py-1 rounded-[3px] shrink-0 hover:bg-[#2560ee] transition-colors"
+        className="text-[13px] font-medium text-white bg-[#0066ff] px-3 py-1 rounded-[3px] shrink-0 hover:bg-[#004ecc] transition-colors"
       >
         Add
       </button>
@@ -421,10 +421,10 @@ function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst, 
   if (visibleTasks.length === 0 && !taskActions) return null;
   if (visibleTasks.length === 0 && taskActions) {
     return (
-      <div className={!isFirst ? "mt-7 pt-7 border-t border-[#e8f1f9]" : ""}>
+      <div className={!isFirst ? "mt-7 pt-7 border-t border-[#eaf5fc]" : ""}>
         <div className="flex items-center gap-2 mb-3">
           {section.icon && <span className="text-[16px] leading-none">{section.icon}</span>}
-          <span className="text-[17px] font-bold text-[#172033]">{section.category}</span>
+          <span className="text-[17px] font-bold text-[#0f1f3d]">{section.category}</span>
         </div>
         <AddTaskRow blockId={blockId} sectionIdx={sectionIdx} taskActions={taskActions} />
       </div>
@@ -434,10 +434,10 @@ function SectionGroup({ section, visibleTasks, completedIds, onToggle, isFirst, 
   const sectionTaskIds = visibleTasks.map((t) => t.id);
 
   return (
-    <div className={!isFirst ? "mt-7 pt-7 border-t border-[#e8f1f9]" : ""}>
+    <div className={!isFirst ? "mt-7 pt-7 border-t border-[#eaf5fc]" : ""}>
       <div className="flex items-center gap-2 mb-3">
         {section.icon && <span className="text-[16px] leading-none">{section.icon}</span>}
-        <span className="text-[18px] font-bold text-[#172033]">{section.category}</span>
+        <span className="text-[18px] font-bold text-[#0f1f3d]">{section.category}</span>
         {isDone && (
           <svg className="w-4 h-4 text-emerald-500 ml-1" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.5 7l3 3 6-6" />
@@ -491,7 +491,7 @@ function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, bloc
   const sectionTaskIds = tasks.map((t) => t.id);
 
   return (
-    <div className={!isFirst ? "mt-5 pt-5 border-t border-[#e8f1f9]" : ""}>
+    <div className={!isFirst ? "mt-5 pt-5 border-t border-[#eaf5fc]" : ""}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-[14px] font-semibold text-[#475569] uppercase tracking-wider">
           {category}
@@ -550,10 +550,10 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#e8f1f9]">
+    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#eaf5fc]">
       {/* Left — Things to Watch */}
       <div className="p-6 lg:pr-8">
-        <h3 className="text-[21px] font-bold text-[#172033] mb-5">Things to Watch</h3>
+        <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Watch</h3>
         {watchGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
         ) : (
@@ -577,7 +577,7 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
 
       {/* Right — Things to Do */}
       <div className="p-6 lg:pl-8">
-        <h3 className="text-[21px] font-bold text-[#172033] mb-5">Things to Do</h3>
+        <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Do</h3>
         {doGroups.length === 0 ? (
           <p className="text-[14px] text-[#94a3b8] italic">No action tasks for this filter.</p>
         ) : (
@@ -739,7 +739,7 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
           <>
             <p className="text-[14px] font-bold text-emerald-700">Day Complete!</p>
             <p className="text-[13px] text-[#475569] mt-0.5 truncate">
-              Next: <span className="font-medium text-[#172033]">{nextBlock!.title}</span>
+              Next: <span className="font-medium text-[#0f1f3d]">{nextBlock!.title}</span>
             </p>
           </>
         )}
@@ -747,7 +747,7 @@ function DayCompleteCard({ blockTitle, nextBlock, onNavigate }: DayCompleteCardP
       {!isFullPlanDone && (
         <button
           onClick={() => onNavigate(nextBlock!.id)}
-          className="shrink-0 text-[13px] font-semibold text-white bg-[#2f6bff] hover:bg-[#2560ee] px-3 py-1.5 rounded-[4px] transition-colors focus:outline-none"
+          className="shrink-0 text-[13px] font-semibold text-white bg-[#0066ff] hover:bg-[#004ecc] px-3 py-1.5 rounded-[4px] transition-colors focus:outline-none"
         >
           Next →
         </button>
@@ -846,7 +846,7 @@ export default function TaskArea({
             onClick={() => setHideCompleted((v) => !v)}
             className={`text-[12px] font-medium px-2.5 py-1 rounded-full border transition-colors focus:outline-none ${
               hideCompleted
-                ? "bg-[#2f6bff] text-white border-[#2f6bff]"
+                ? "bg-[#0066ff] text-white border-[#0066ff]"
                 : "text-[#94a3b8] border-[#e2e8f0] hover:border-[#94a3b8] hover:text-[#475569]"
             }`}
           >
@@ -864,7 +864,7 @@ export default function TaskArea({
             <p className="text-[15px] text-[#475569] font-medium">All tasks completed.</p>
             <p className="text-[13px] text-[#94a3b8] mt-1">
               Click{" "}
-              <button onClick={() => setHideCompleted(false)} className="text-[#2f6bff] hover:underline focus:outline-none">
+              <button onClick={() => setHideCompleted(false)} className="text-[#0066ff] hover:underline focus:outline-none">
                 Show all
               </button>{" "}
               to review them.
@@ -912,22 +912,22 @@ export default function TaskArea({
     <div className="px-5 lg:px-6 pb-6">
       <div className="bg-white rounded-[8px] border border-[#e2e8f0] overflow-hidden">
         {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-[#e8f1f9]">
+        <div className="px-5 pt-5 pb-4 border-b border-[#eaf5fc]">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <h2 className="text-[18px] font-bold text-[#172033] leading-snug break-words">{block.title}</h2>
+              <h2 className="text-[18px] font-bold text-[#0f1f3d] leading-snug break-words">{block.title}</h2>
               <p className="text-[13px] text-[#94a3b8] mt-1 tabular-nums">
                 {completedCount} of {totalCount} required tasks completed
               </p>
             </div>
-            <span className={`text-[28px] font-bold tabular-nums leading-none shrink-0 ${blockDone ? "text-emerald-600" : "text-[#2f6bff]"}`}>
+            <span className={`text-[28px] font-bold tabular-nums leading-none shrink-0 ${blockDone ? "text-emerald-600" : "text-[#0066ff]"}`}>
               {pct}%
             </span>
           </div>
 
-          <div className="mt-3 h-1.5 w-full rounded-full bg-[#e8f1f9] overflow-hidden">
+          <div className="mt-3 h-1.5 w-full rounded-full bg-[#eaf5fc] overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-500 ${blockDone ? "bg-emerald-500" : "bg-[#2f6bff]"}`}
+              className={`h-full rounded-full transition-all duration-500 ${blockDone ? "bg-emerald-500" : "bg-[#0066ff]"}`}
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -937,7 +937,7 @@ export default function TaskArea({
               onClick={() => setHideCompleted((v) => !v)}
               className={`text-[13px] font-medium px-3 py-1 rounded-full border transition-colors focus:outline-none ${
                 hideCompleted
-                  ? "bg-[#2f6bff] text-white border-[#2f6bff]"
+                  ? "bg-[#0066ff] text-white border-[#0066ff]"
                   : "text-[#64748b] border-[#e2e8f0] hover:border-[#94a3b8]"
               }`}
             >
