@@ -255,48 +255,78 @@ function DayRow({
   );
   const done = required.filter((t) => completedIds.has(t.id)).length;
   const allDone = required.length > 0 && done === required.length;
+  const pct = required.length > 0 ? Math.round((done / required.length) * 100) : 0;
 
   return (
     <div className={!isLast ? "border-b border-[#d9e4f0]" : ""}>
       {/* Accordion header */}
       <div
-        className={`flex items-center px-5 py-3.5 gap-4 transition-colors cursor-pointer select-none ${
-          isExpanded ? "bg-[#c7e0f1]" : "bg-[#eaf5fc] hover:bg-[#c7e0f1]"
+        className={`flex items-center px-4 py-2.5 gap-3 transition-colors cursor-pointer select-none ${
+          isExpanded ? "bg-[#eaf5fc]" : "bg-white hover:bg-[#f8fafc]"
         }`}
         onClick={() => onToggle(block.id)}
       >
-        <span className="flex-1 text-[16px] font-medium text-[#0f1f3d] leading-snug min-w-0">
+        {/* Circle chevron */}
+        <div className={`shrink-0 w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${isExpanded ? "border-[#93b8de] bg-[#c7e0f1]" : "border-[#d9e4f0] bg-white"}`}>
+          <svg
+            className={`w-3 h-3 text-[#64748b] transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+            viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.2"
+            strokeLinecap="round" strokeLinejoin="round"
+          >
+            <path d="M4 2.5l4 3.5-4 3.5" />
+          </svg>
+        </div>
+
+        {/* Title */}
+        <span className="flex-1 text-[14px] font-medium text-[#0f1f3d] leading-snug min-w-0">
           {block.title}
         </span>
 
-        {/* Done toggle */}
-        <button
-          onClick={(e) => { e.stopPropagation(); onBulkToggle(block); }}
-          className="flex items-center gap-2 shrink-0 focus:outline-none"
-          title={allDone ? "Mark all incomplete" : "Mark all as done"}
-        >
-          <div
-            className="w-[15px] h-[15px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors rounded-[2px]"
-            style={{
-              background: allDone ? "#1565c0" : "white",
-              borderColor: allDone ? "#1565c0" : "#94a3b8",
-            }}
-          >
-            {allDone && (
-              <svg className="w-[9px] h-[9px] text-white" viewBox="0 0 9 9" fill="none">
-                <path d="M1.5 4.5L3.5 6.5L7.5 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            )}
-          </div>
-          <span className="text-[15px] text-[#475569]">Done</span>
-        </button>
+        {/* Right controls */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {/* Pct text */}
+          <span className="text-[11px] text-[#94a3b8] tabular-nums whitespace-nowrap hidden sm:inline">
+            {pct}% complete
+          </span>
 
-        <ChevronIcon open={isExpanded} />
+          {/* Mini progress bar */}
+          <div className="hidden sm:block w-16 h-[3px] rounded-full bg-[#e2e8f0] overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-500 ${allDone ? "bg-emerald-500" : "bg-[#1565c0]"}`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+
+          {/* Mark done */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onBulkToggle(block); }}
+            className="flex items-center gap-1.5 shrink-0 focus:outline-none"
+            title={allDone ? "Mark all incomplete" : "Mark all as done"}
+          >
+            <div
+              className="w-[13px] h-[13px] border-[1.5px] flex items-center justify-center shrink-0 transition-colors rounded-[2px]"
+              style={{
+                background: allDone ? "#1565c0" : "white",
+                borderColor: allDone ? "#1565c0" : "#94a3b8",
+              }}
+            >
+              {allDone && (
+                <svg className="w-[8px] h-[8px] text-white" viewBox="0 0 9 9" fill="none">
+                  <path d="M1.5 4.5L3.5 6.5L7.5 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </div>
+            <span className="text-[12px] text-[#64748b]">Mark done</span>
+          </button>
+
+          {/* Expand chevron */}
+          <ChevronIcon open={isExpanded} />
+        </div>
       </div>
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="bg-white border-t border-[#c7e0f1]">
+        <div className="bg-white border-t border-[#d9e4f0]">
           <TaskArea
             block={block}
             plan={plan}

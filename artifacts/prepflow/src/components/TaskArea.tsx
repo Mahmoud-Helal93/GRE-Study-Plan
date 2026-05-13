@@ -190,7 +190,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className={`text-[16px] leading-[1.8] break-words ${
+                className={`text-[14px] leading-[1.6] break-words ${
                   completed ? "line-through text-[#94a3b8]" : "text-[#0066ff] hover:underline"
                 }`}
               >
@@ -204,7 +204,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
             <>
               <button onClick={() => onToggle(task.id)} className="w-full text-left focus:outline-none">
                 <span
-                  className={`text-[16px] leading-[1.8] break-words ${
+                  className={`text-[14px] leading-[1.6] break-words ${
                     completed ? "line-through text-[#94a3b8]" : "text-[#0f1f3d]"
                   }`}
                 >
@@ -223,7 +223,7 @@ function TaskRow({ task, completed, onToggle, blockId, sectionIdx, taskActions, 
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="text-[16px] text-[#0066ff] hover:underline leading-[1.8] break-words"
+                      className="text-[14px] text-[#0066ff] hover:underline leading-[1.6] break-words"
                     >
                       {link.text || link.url}
                     </a>
@@ -491,17 +491,17 @@ function ColumnCategory({ category, tasks, completedIds, onToggle, isFirst, bloc
   const sectionTaskIds = tasks.map((t) => t.id);
 
   return (
-    <div className={!isFirst ? "mt-5 pt-5 border-t border-[#eaf5fc]" : ""}>
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-[14px] font-semibold text-[#475569] uppercase tracking-wider">
+    <div className={!isFirst ? "mt-4 pt-4 border-t border-[#e2e8f0]" : ""}>
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className="text-[10px] font-semibold text-[#94a3b8] uppercase tracking-widest">
           {category}
         </span>
         {isDone && (
-          <svg className="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg className="w-3 h-3 text-emerald-500" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2.5 7l3 3 6-6" />
           </svg>
         )}
-        <span className="ml-auto text-[13px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
+        <span className="ml-auto text-[11px] text-[#94a3b8] tabular-nums">{done}/{total}</span>
       </div>
       <div className="flex flex-col">
         {tasks.map((task) => (
@@ -550,12 +550,19 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#eaf5fc]">
+    <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[#d9e4f0]">
       {/* Left — Things to Watch */}
-      <div className="p-6 lg:pr-8">
-        <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Watch</h3>
+      <div className="p-5 lg:pr-7">
+        <h3 className="flex items-center gap-2 text-[16px] font-semibold text-[#0f1f3d] mb-4">
+          <span className="w-6 h-6 rounded-full bg-[#0066ff] flex items-center justify-center shrink-0">
+            <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M3 2.5l7 3.5-7 3.5V2.5z" />
+            </svg>
+          </span>
+          Things to Watch
+        </h3>
         {watchGroups.length === 0 ? (
-          <p className="text-[14px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
+          <p className="text-[13px] text-[#94a3b8] italic">No watch tasks for this filter.</p>
         ) : (
           watchGroups.map((group, i) => (
             <ColumnCategory
@@ -576,10 +583,18 @@ function ColumnsGrid({ watchGroups, doGroups, completedIds, onToggle, blockId, t
       </div>
 
       {/* Right — Things to Do */}
-      <div className="p-6 lg:pl-8">
-        <h3 className="text-[21px] font-bold text-[#0f1f3d] mb-5">Things to Do</h3>
+      <div className="p-5 lg:pl-7">
+        <h3 className="flex items-center gap-2 text-[16px] font-semibold text-[#0f1f3d] mb-4">
+          <span className="w-6 h-6 rounded-[4px] bg-[#0066ff] flex items-center justify-center shrink-0">
+            <svg className="w-3.5 h-3.5 text-white" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="2" width="10" height="10" rx="1.5" />
+              <path d="M4 5h6M4 7.5h4" />
+            </svg>
+          </span>
+          Things to Do
+        </h3>
         {doGroups.length === 0 ? (
-          <p className="text-[14px] text-[#94a3b8] italic">No action tasks for this filter.</p>
+          <p className="text-[13px] text-[#94a3b8] italic">No action tasks for this filter.</p>
         ) : (
           doGroups.map((group, i) => (
             <ColumnCategory
